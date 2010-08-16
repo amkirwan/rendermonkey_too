@@ -1,0 +1,17 @@
+!!! XHTML 1.0 Transitional
+%html(xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en")
+  %head
+    %meta{'http-equiv' => 'Content-Type', :content => 'text/html;charset=UTF-8'}/
+    %title Secure
+    %style{:type => "text/css", :media => "screen"}
+      :plain
+        .labels {
+          float: left;
+          width: 80px;
+        }
+        .no-list {
+          list-style: none;
+        }
+    %body 
+      %container
+        = yield
