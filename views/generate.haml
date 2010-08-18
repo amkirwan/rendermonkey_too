@@ -1,0 +1,12 @@
+%h3 Enter Params to generate secure hash
+
+%form{ :action => "", :method => "post" }
+  %fieldset
+    %ul{:class => "no-list"}
+      %li
+        %label{:for => "url", :class => "labels" } URL 
+        %input{:type => "text", :url => "url", :id => "url"}
+      %li
+        %label{:for => "name",:class => "labels"} Name
+        %input{:type => "text", :name => "name", :id => "name"}
+    %input{:type => "submit", :value => "Send", :class => "button"}

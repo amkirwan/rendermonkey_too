@@ -1,9 +1,9 @@
-%h3 Enter Params to generate a new api and secret key for an application
+%h3 Enter Name for an app to generate a API key and Secure Hash Key
 
 %form{:action => "create", :method => "post"}
   %fieldset
     %ul{:class => "no-list"}
       %li
-        %label{:for => "app_name", :class => "labels"}App Name:
+        %label{:for => "app_name", :class => "labels"}App Name
         %input{:type => "text", :name => "app_name", :id => "app_name"}
     %input{:type => "submit", :value => "Create", :class => "button"}
