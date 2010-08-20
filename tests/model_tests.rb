@@ -7,7 +7,7 @@ require 'test/unit'
 require 'rack/test'
 require 'rendermonkey_too'
 
-class SecureTest < Test::Unit::TestCase
+class ModelTests < Test::Unit::TestCase
   include Rack::Test::Methods
   
   def app

@@ -7,7 +7,7 @@ require 'test/unit'
 require 'rack/test'
 require 'rendermonkey_too'
 
-class SecureTest < Test::Unit::TestCase
+class RendermonkeyTooTests < Test::Unit::TestCase
   include Rack::Test::Methods
   
   def app
@@ -28,19 +28,16 @@ class SecureTest < Test::Unit::TestCase
   end
   
   def test_create
-    post '/create', {"app_name" => "Test App"}
-    assert_equal url_test('/create'), last_request.url
+    post '/create', {"app_name" => "TestCreate"}
+    assert_equal url_test("/create"), last_request.url
     assert last_response.ok?
-    assert last_response.body.include?("Test App")
+    assert last_response.body.include?("TestCreate")
   end
   
   def test_generate
-    get '/generate'
+    post '/generate', {"page" => "<b>Hello</b>World!"}
+    assert_equal url_test('/generate'), last_request.url
     assert last_response.ok?
-    assert_equal url_test("/generate"), last_request.url
-    assert last_response.body.include?("URL")
-    assert last_response.body.include?("Name")
-    assert last_response.headers.include?("Content-Type")
   end
     
   private 
