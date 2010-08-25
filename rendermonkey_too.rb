@@ -4,6 +4,7 @@ require 'haml'
 
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 require 'secure_key'
+require 'pdf'
 require 'models'
 
 error do
@@ -12,7 +13,9 @@ error do
 end
 
 before do
-	@secure_key = SecureKey::Digest.new
+  if (request.path_info == '/generate' || request.path_info == 'create')
+    @sk = SecureKey::Digest.new
+  end
 end
 
 get '/' do
@@ -28,30 +31,24 @@ post '/create' do
 end
 
 post '/generate' do
-  location = '/Users/akirwan/code/rendermonkey_too/tmp/'
-  # if the file exists keep looping until we find one that doesn't exist
-  begin
-    time_string = Time.now.strftime("H%M%S").to_s
-    random = random_generator
-    fName = random + time_string
-    f_path_html = location + fName + '.html'
-    f_path_pdf = location + fName + '.pdf'
-  end while FileTest.exist?(f_path_pdf)
-  
-  File.open(f_path_html, 'w') { |f| f.write(params[:page]) }
-  
-  system("/usr/local/bin/wkhtmltopdf #{f_path_html} #{f_path_pdf}")
-  
-  if params[:name].nil?
-    report_type = "report.pdf"
+  login_api = LoginApi.first(:api_key => params["api_key"])
+  if @sk.signature_match(login_api, params)
+    pdf_file = PDF::Generator.generate(params["page"])
+    
+    if params["name"].nil?
+      report_type = "Untitl.pdf"
+    else
+      report_type = params["name"] + ".pdf"
+    end
+    
+    send_file pdf_file,
+              :disposition => 'attachment',
+              :filename => report_type,
+              :type => 'application/pdf'
   else
-    report_type = params[:name] + ".pdf"
+    raise "An error occured max sure you are using the correct api_key and hash_key"
   end
   
-  send_file f_path_pdf,
-            :disposition => 'attachment',
-            :filename => report_type,
-            :type => 'application/pdf'
 end
 
 private

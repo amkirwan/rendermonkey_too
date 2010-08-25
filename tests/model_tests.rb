@@ -30,7 +30,7 @@ class ModelTests < Test::Unit::TestCase
   def test_unique_name_required
     login_api = LoginApi.new(:name => "test_unique_name_required",
                              :api_key => "835a3161dc4e71b7",
-                             :hash_key => "0b81d46ef348de79ea6b9a3bb841db35")
+                             :hash_key => "0b81d46ef348de79ea6b9a3bb841db35=")
     assert login_api.valid?
     assert login_api.save
     login_api2 = LoginApi.new(:name => "test_unique_name_required",
@@ -75,7 +75,7 @@ class ModelTests < Test::Unit::TestCase
   def test_valid_login_api
     login_api = LoginApi.new(:name => "test_valid_login_api",
                              :api_key => "835a3161dc4e71b",
-                             :hash_key => "0b81d46ef348de79ea6b9a3bb841db5")
+                             :hash_key => "0b81d46ef348de79ea6b9a3bb841db5=")
     
     assert login_api.save
   end
