@@ -32,23 +32,23 @@ end
 
 post '/generate' do
   login_api = LoginApi.first(:api_key => params["api_key"])
-  if @sk.signature_match(login_api, params)
+  @sk.signature_match(login_api, params)
+  if @sk.error_message.empty?
     pdf_file = PDF::Generator.generate(params["page"])
-    
+  
     if params["name"].nil?
       report_type = "Untitl.pdf"
     else
       report_type = params["name"] + ".pdf"
     end
-    
+  
     send_file pdf_file,
               :disposition => 'attachment',
               :filename => report_type,
               :type => 'application/pdf'
   else
-    raise "An error occured max sure you are using the correct api_key and hash_key"
+    halt @sk.error_message
   end
-  
 end
 
 private

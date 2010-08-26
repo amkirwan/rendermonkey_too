@@ -36,42 +36,64 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   
   ### Test Generate
   def test_generate_pass
-    edit_params(nil, {"timestamp" => Time.now.utc.iso8601})
+    edit_params(nil, "timestamp" => Time.now.utc.iso8601)
 
     post '/generate', @params
     assert_equal url_test('/generate'), last_request.url
     assert last_response.ok?
-    assert last_response.content_type, 'application/pdf'
+    assert_equal last_response.content_type, 'application/pdf'
   end
   
   ## failure tests
-  def test_generate_fail_api_key
-    edit_params(nil, "api_key" => "abcd")
+  def test_generate_fail_login_api_not_found
+    @login_api.destroy
  
-    e = assert_raise(RuntimeError) { post '/generate', @params }
-    assert_match /API key error: API key does not exist or is incorrect/i, e.message
+    post '/generate', @params
+    assert_equal url_test('/generate'), last_request.url
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.body, "API key error: API key does not exist or is incorrect"
   end
   
-  def test_generate_fail_timestamp
+  def test_generate_missing_param
+    @params.delete("timestamp")
+ 
+    post '/generate', @params
+    assert_equal url_test('/generate'), last_request.url
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.body, "Incorrect parameters"
+  end
+  
+  def test_generate_timestamp_too_old
     edit_params(nil, "timestamp" => "2010-08-22T00:24:46Z")
-    e = assert_raise(RuntimeError) { post '/generate', @params }
-    assert_match /Too much time has passed. Request will need to be regenerated/i, e.message
-    
-    edit_params(nil, "timestamp" => "bad-timestamp")
-    e = assert_raise(RuntimeError) { post '/generate', @params }
-    assert_match /Incorrect timestamp format/i, e.message
+ 
+    post '/generate', @params
+    assert_equal url_test('/generate'), last_request.url
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.body, "Too much time has passed. Request will need to be regenerated"
   end
   
-  def test_generate_fail_wrong_signature
-    edit_params("sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc411=")
-    
-    e = assert_raise(RuntimeError) { post '/generate', @params }
-    assert_match /An error occured max sure you are using the correct api_key and hash_key/i, e.message
+  def test_generate_timestamp_incorrect_format
+    edit_params(nil, "timestamp" => "bad-format")
+ 
+    post '/generate', @params
+    assert_equal url_test('/generate'), last_request.url
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.body, "Incorrect timestamp format"
   end
   
-  def test_sk
-    assert @sk.signature_match(@login_api, @params)
-  end
+  #def test_generate_missing_param
+  #  @params.delete("signature")
+ 
+  #  post '/generate', @params
+  #  assert_equal url_test('/generate'), last_request.url
+  #  assert last_response.ok?
+  #  assert_equal last_response.content_type, "text/html"
+  #  assert_equal last_response.body, "Incorrect parameters"
+  #end
     
   private 
   
@@ -93,7 +115,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
                "api_key"=>"835a3161dc4e71b"}
                
     @hash_key = "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4=" 
-    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @params["page"])).chomp
+    @sk.canonical_querystring = @params
+    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @sk.canonical_querystring)).chomp
     @params["signature"] = signature
     
     @api = {"name" => "test_valid_login_api", 
