@@ -29,6 +29,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   
   def test_create
     post '/create', {"app_name" => "TestCreate"}
+    
     assert_equal url_test("/create"), last_request.url
     assert last_response.ok?
     assert last_response.body.include?("TestCreate")
@@ -37,63 +38,50 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   ### Test Generate
   def test_generate_pass
     edit_params(nil, "timestamp" => Time.now.utc.iso8601)
-
     post '/generate', @params
+    
     assert_equal url_test('/generate'), last_request.url
     assert last_response.ok?
     assert_equal last_response.content_type, 'application/pdf'
   end
   
   ## failure tests
+  
   def test_generate_fail_login_api_not_found
     @login_api.destroy
- 
     post '/generate', @params
-    assert_equal url_test('/generate'), last_request.url
-    assert last_response.ok?
+    
+    assert_equal last_response.status, 412
     assert_equal last_response.content_type, "text/html"
-    assert_equal last_response.body, "API key error: API key does not exist or is incorrect"
+    assert_equal last_response.body, "api_key missing or incorrect"
+  end
+
+  def test_generate_fail_missing_param
+    @params.delete("page")
+    post '/generate', @params
+    
+    assert_equal last_response.status, 412
+    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.body, "Incorrect or missing parameters"
   end
   
-  def test_generate_missing_param
-    @params.delete("timestamp")
- 
+  def test_generate_fail_hashtype
+    edit_params(nil, "signature" => "abcdefg")
     post '/generate', @params
-    assert_equal url_test('/generate'), last_request.url
-    assert last_response.ok?
+    
+    assert_equal last_response.status, 412
     assert_equal last_response.content_type, "text/html"
-    assert_equal last_response.body, "Incorrect parameters"
+    assert_equal last_response.body, "Incorrect hashtype"
   end
   
-  def test_generate_timestamp_too_old
+  def test_generate_time_diff
     edit_params(nil, "timestamp" => "2010-08-22T00:24:46Z")
- 
     post '/generate', @params
-    assert_equal url_test('/generate'), last_request.url
-    assert last_response.ok?
+    
+    assert_equal last_response.status, 412
     assert_equal last_response.content_type, "text/html"
     assert_equal last_response.body, "Too much time has passed. Request will need to be regenerated"
   end
-  
-  def test_generate_timestamp_incorrect_format
-    edit_params(nil, "timestamp" => "bad-format")
- 
-    post '/generate', @params
-    assert_equal url_test('/generate'), last_request.url
-    assert last_response.ok?
-    assert_equal last_response.content_type, "text/html"
-    assert_equal last_response.body, "Incorrect timestamp format"
-  end
-  
-  #def test_generate_missing_param
-  #  @params.delete("signature")
- 
-  #  post '/generate', @params
-  #  assert_equal url_test('/generate'), last_request.url
-  #  assert last_response.ok?
-  #  assert_equal last_response.content_type, "text/html"
-  #  assert_equal last_response.body, "Incorrect parameters"
-  #end
     
   private 
   

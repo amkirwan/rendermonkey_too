@@ -32,8 +32,8 @@ end
 
 post '/generate' do
   login_api = LoginApi.first(:api_key => params["api_key"])
-  @sk.signature_match(login_api, params)
-  if @sk.error_message.empty?
+
+  if @sk.signature_match(login_api, params)
     pdf_file = PDF::Generator.generate(params["page"])
   
     if params["name"].nil?
@@ -47,7 +47,8 @@ post '/generate' do
               :filename => report_type,
               :type => 'application/pdf'
   else
-    halt @sk.error_message
+    status(412)
+    @sk.error_message
   end
 end
 
