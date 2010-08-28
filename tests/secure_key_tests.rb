@@ -13,7 +13,7 @@ class SecureKeyTests < Test::Unit::TestCase
   def app
     Sinatra::Application
   end
-  
+ 
   def test_generate_api_key_not_equal
     sk = SecureKey::Generate.generate_api_key
     sk2 = SecureKey::Generate.generate_api_key 
@@ -112,9 +112,10 @@ class SecureKeyTests < Test::Unit::TestCase
     sig.gsub!(/\d/, 'A')
     edit_params(nil, 'signature' => sig)
 
-    assert @sk.signature_match(@login_api, @params)
+    assert !@sk.signature_match(@login_api, @params)
+    assert_equal @sk.error_message, "Signature failed"
   end
-  
+ 
   # Testing catch throw of signature_match
   def test_signature_match_nil_param
     @params.delete("api_key")

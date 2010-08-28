@@ -46,6 +46,16 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
   ## failure tests
+  def test_generate_fail_authentication
+    sig = @params["signature"]
+    sig.gsub!(/\d/, 'A')
+    edit_params(nil, 'signature' => sig)
+    post '/generate', @params
+    
+    assert_equal last_response.status, 412
+    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.body, "Signature failed"
+  end
   
   def test_generate_fail_login_api_not_found
     @login_api.destroy

@@ -48,6 +48,7 @@ post '/generate' do
               :type => 'application/pdf'
   else
     status(412)
+    puts "*"*10 + @sk.error_message + "*"*10
     @sk.error_message
   end
 end

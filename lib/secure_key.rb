@@ -49,11 +49,13 @@ module SecureKey
         process_params(login_api, params)     
       end
       
-      puts "*"*10 + self.error_message
       if(self.error_message.empty?)
-        puts "here"  
-        return true
-        return @params_signature == signature(hashtype, login_api.hash_key, @canonical_querystring)
+        if @params_signature == signature(hashtype, login_api.hash_key, @canonical_querystring)
+          return true
+        else
+          self.error_message = "Signature failed"
+          return false
+        end
       else
         return false
       end
@@ -76,7 +78,7 @@ module SecureKey
         throw :params_error, "api_key missing or incorrect"
       end
         
-      if(params["signature"].nil? || params["timestamp"].nil? || params["page"].nil?)
+      if(params["signature"].nil? || params["api_key"].nil?|| params["timestamp"].nil? || params["page"].nil?)
         throw :params_error, "Incorrect or missing parameters"
       end
     end
