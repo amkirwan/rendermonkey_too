@@ -24,9 +24,9 @@ class LoginApi
   property :created_at,   DateTime
   property :updated_at,   DateTime
   
-  validates_format_of :name, :with => /^\w+$/
-  validates_format_of :api_key, :with => /^[A-Za-z0-9]+$/
-  validates_format_of :hash_key, :with => /^[A-Za-z0-9\/+]+=$/
+  validates_format_of :name, :with => /[\w\s\d]+/
+  validates_format_of :api_key, :with => /^[\w\d]+$/
+  validates_format_of :hash_key, :with => /^[\w\d\/+]+=$/
 
 end
 
