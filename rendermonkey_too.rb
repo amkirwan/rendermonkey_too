@@ -34,7 +34,7 @@ post '/generate' do
   login_api = LoginApi.first(:api_key => params["api_key"])
 
   if @sk.signature_match(login_api, params)
-    pdf_file = PDF::Generator.generate(params["page"])
+    pdf_file = PDF::Generator.generate(params)
   
     if params["name"].nil?
       report_type = "Untitl.pdf"

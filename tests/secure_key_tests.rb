@@ -141,9 +141,10 @@ class SecureKeyTests < Test::Unit::TestCase
 
   def setup
     @sk = SecureKey::Digest.new
-    @params = {"timestamp" => "#{Time.now.utc.iso8601}", 
-               "page"=>"<b>Hello</b>, World!", 
-               "api_key"=>"835a3161dc4e71b"}
+    @params = { "timestamp" => "#{Time.now.utc.iso8601}", 
+                "page"=>"<b>Hello</b>, World!", 
+                "api_key"=>"835a3161dc4e71b" 
+               }
 
     @hash_key = "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4=" 
     @sk.canonical_querystring = @params
