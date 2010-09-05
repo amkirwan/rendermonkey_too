@@ -33,117 +33,117 @@ helpers do
     end
   end
   
-  def login_api_url(lp)
-    "#{base_url}login_api/#{lp.id}"
+  def api_secure_key_url(lp)
+    "#{base_url}api_secure_key/#{lp.id}"
   end
   
   def process_xml(xml)
     xml_params = Crack::XML.parse(xml)
-    xml_params = xml_params.delete("login_api") if xml_params.has_key?("login_api")
+    xml_params = xml_params.delete("api_secure_key") if xml_params.has_key?("api_secure_key")
     params.merge!(xml_params)
   end
   
 end
 
 get '/' do
-  redirect '/login_api'
+  redirect '/api_secure_key'
 end
 
-get '/login_api' do
-  la = LoginApi.all
-  halt [ 404, "Api Key not found" ] unless la
+get '/api_secure_key' do
+  ask = ApiSecureKey.all
+  halt [ 404, "Api Key not found" ] unless ask
 
   respond_to do |format|
-    format.html { haml :show_all, :locals => { :la => la } }
-    format.xml { la.to_xml }
+    format.html { haml :show_all, :locals => { :ask => ask } }
+    format.xml { ask.to_xml }
   end
 end
 
 #show
-get '/login_api/show/:id' do
-  la = LoginApi.get(params[:id])
-  halt [ 404, "LoginApi not found" ] unless la
+get '/api_secure_key/show/:id' do
+  ask = ApiSecureKey.get(params[:id])
+  halt [ 404, "ApiSecureKey not found" ] unless ask
   
   respond_to do |format|
-    format.html { haml :show, :locals => { :la => la } }
-    format.xml { la.to_xml }
+    format.html { haml :show, :locals => { :ask => ask } }
+    format.xml { ask.to_xml }
   end
 end
 
 #show_by_app_name
-get '/login_api/app_name/:app_name' do
-  la = LoginApi.first(:app_name => params[:app_name])
-  halt [ 404, "Api Key not found" ] unless la
+get '/api_secure_key/app_name/:app_name' do
+  ask = ApiSecureKey.first(:app_name => params[:app_name])
+  halt [ 404, "Api Key not found" ] unless ask
 
   respond_to do |format|
-    format.html { haml :show, :locals => { :la => la } }
-    format.xml { la.to_xml }
+    format.html { haml :show, :locals => { :ask => ask } }
+    format.xml { ask.to_xml }
   end
 end
 
 #show_by_api_key
-get '/login_api/api_key/:api_key' do
-  la = LoginApi.first(:api_key => params[:api_key])
-  halt [ 404, "Api Key not found" ] unless la
+get '/api_secure_key/api_key/:api_key' do
+  ask = ApiSecureKey.first(:api_key => params[:api_key])
+  halt [ 404, "Api Key not found" ] unless ask
   
   respond_to do |format|
-    format.html { haml :show, :locals => { :la => la } }
-    format.xml { la.to_xml }
+    format.html { haml :show, :locals => { :ask => ask } }
+    format.xml { ask.to_xml }
   end
 end
 
 #new
-get '/login_api/new' do
+get '/api_secure_key/new' do
   haml :new
 end
 
 #create
-post '/login_api/create' do
+post '/api_secure_key/create' do
   if request.content_type == "application/xml"
     process_xml(request.body.read.to_s)
   end
   
-  la = LoginApi.new(:app_name => params["app_name"],
+  ask = ApiSecureKey.new(:app_name => params["app_name"],
                     :api_key => SecureKey::Generate.generate_api_key,
                     :hash_key => SecureKey::Generate.generate_hash_key)
-  if la.save
+  if ask.save
     respond_to do |format|
-      format.html { redirect "/login_api/show/#{la.id}"}
+      format.html { redirect "/api_secure_key/show/#{ask.id}"}
       format.xml do 
         status(201)
-        response['Location'] = login_api_url(la)
-        la.to_xml
+        response['Location'] = api_secure_key_url(ask)
+        ask.to_xml
       end
     end
   else
     status(412)
-    "Error: Creating Login API Key: #{la.errors.on(:app_name)}"
+    "Error: Creating Login API Key: #{ask.errors.on(:app_name)}"
   end
 end 
 
-# edit /login_api/1/edit
-get '/login_api/:id/edit' do
-    la = LoginApi.get(params["id"])
-    haml :edit, :locals => { :la => la }
+# edit /api_secure_key/1/edit
+get '/api_secure_key/:id/edit' do
+    ask = ApiSecureKey.get(params["id"])
+    haml :edit, :locals => { :ask => ask }
 end
 
 
-# udpate /login_api/update
-put '/login_api/update' do
+# udpate /api_secure_key/update
+put '/api_secure_key/update' do
   if request.content_type == "application/xml"
     process_xml(request.body.read.to_s)
   end
-  la = LoginApi.get(params[:id])
-  la.api_key = SecureKey::Generate.generate_api_key if params[:api_key] == "checked"
-  la.hash_key = SecureKey::Generate.generate_hash_key if params[:hash_key] == "checked"
-  la.app_name = params["app_name"]
+  ask = ApiSecureKey.get(params[:id])
+  ask.api_key = SecureKey::Generate.generate_api_key if params[:api_key] == "checked"
+  ask.hash_key = SecureKey::Generate.generate_hash_key if params[:hash_key] == "checked"
+  ask.app_name = params["app_name"]
   
-  if la.save
+  if ask.save
     respond_to do |format|
-      format.html { redirect "/login_api/#{la.id}" }
+      format.html { redirect "/api_secure_key/#{ask.id}" }
       format.xml do 
         status(202)
-        la.to_xml
+        ask.to_xml
       end
     end
   else
@@ -152,14 +152,14 @@ put '/login_api/update' do
   end
 end
 
-delete '/login_api/destroy' do
+delete '/api_secure_key/destroy' do
   if request.content_type == "application/xml"
     process_xml(request.body.read.to_s)
   end
-  la = LoginApi.get(params[:id])
-  if la.destroy
+  ask = ApiSecureKey.get(params[:id])
+  if ask.destroy
     respond_to do |format|
-      format.html { redirect "/login_api" }
+      format.html { redirect "/api_secure_key" }
       format.xml do
         status(200)
         "Delete succeeded"
@@ -174,9 +174,9 @@ end
 
 
 post '/generate' do
-  login_api = LoginApi.first(:api_key => params["api_key"])
+  api_secure_key = ApiSecureKey.first(:api_key => params["api_key"])
 
-  if @sk.signature_match(login_api, params)
+  if @sk.signature_match(api_secure_key, params)
     pdf_file = PDF::Generator.generate(params)
   
     if params["name"].nil?

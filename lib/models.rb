@@ -16,7 +16,7 @@ configure :test do
   DataMapper.auto_migrate!
 end
 
-class LoginApi
+class ApiSecureKey
   include DataMapper::Resource
   property :id,           Serial
   property :app_name,     String, :unique => true, :required => true

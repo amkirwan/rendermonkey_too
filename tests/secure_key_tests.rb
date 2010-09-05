@@ -1,7 +1,7 @@
 ENV['RACK_ENV'] = "test"
 
 $LOAD_PATH << File.join(Dir.getwd, "..")
-require 'rubygems'
+require 'rubygems'                                                            
 require 'test/unit'
 require 'rack/test'
 require 'rendermonkey_too'
@@ -94,17 +94,17 @@ class SecureKeyTests < Test::Unit::TestCase
   end
 
   def test_signature_pass 
-    assert_equal @params["signature"], @sk.signature("SHA256", @login_api["hash_key"], @sk.canonical_querystring)
+    assert_equal @params["signature"], @sk.signature("SHA256", @api_secure_key["hash_key"], @sk.canonical_querystring)
   end
 
   def test_signature_fail_diff_hash_key
     edit_params("abcdefg", {})
     
-    assert_not_equal @params["signature"], @sk.signature("SHA256", @login_api["hash_key"], @sk.canonical_querystring)
+    assert_not_equal @params["signature"], @sk.signature("SHA256", @api_secure_key["hash_key"], @sk.canonical_querystring)
   end
   
   def test_signature_match_pass
-    assert @sk.signature_match(@login_api, @params)
+    assert @sk.signature_match(@api_secure_key, @params)
   end
 
   def test_signature_fail
@@ -112,7 +112,7 @@ class SecureKeyTests < Test::Unit::TestCase
     sig.gsub!(/\d/, 'A')
     edit_params(nil, 'signature' => sig)
 
-    assert !@sk.signature_match(@login_api, @params)
+    assert !@sk.signature_match(@api_secure_key, @params)
     assert_equal @sk.error_message, "Signature failed"
   end
  
@@ -120,21 +120,21 @@ class SecureKeyTests < Test::Unit::TestCase
   def test_signature_match_nil_param
     @params.delete("api_key")
 
-    @sk.signature_match(@login_api, @params)
+    @sk.signature_match(@api_secure_key, @params)
     assert_equal @sk.error_message, "Incorrect or missing parameters"
   end
 
   def test_signature_match_incorrect_hash_length
     edit_params(nil, "signature" => "abcdefg")
 
-    @sk.signature_match(@login_api, @params)
+    @sk.signature_match(@api_secure_key, @params)
     assert_equal @sk.error_message, "Incorrect hashtype"
   end
 
   def test_timestamp_diff_too_much
     edit_params(nil, "timestamp" => "2010-08-22T00:24:46Z")
 
-    @sk.signature_match(@login_api, @params)
+    @sk.signature_match(@api_secure_key, @params)
     assert_equal @sk.error_message, "Too much time has passed. Request will need to be regenerated"
   end
   # signature match
@@ -154,14 +154,14 @@ class SecureKeyTests < Test::Unit::TestCase
     @api = {"name" => "test_valid_login_api", 
             "api_key" => "835a3161dc4e71b", 
             "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
-    @login_api = LoginApi.new(@api)
-    @login_api.save
+    @api_secure_key = ApiSecureKey.new(@api)
+    @api_secure_key.save
   end
 
   def teardown
     @sk = nil
     @params = nil
-    @login_api.destroy
+    @api_secure_key.destroy
   end
 
   private
@@ -175,12 +175,12 @@ class SecureKeyTests < Test::Unit::TestCase
     @params
   end
 
-  def update_login_api(options={})
+  def update_api_secure_key(options={})
     defaults = {"name" => "test_valid_login_api", 
                 "api_key" => "835a3161dc4e71b", 
                 "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
     defaults.merge!(options)
-    @login_api.update(defaults)
+    @api_secure_key.update(defaults)
   end
   
  
@@ -196,17 +196,17 @@ class SecureKeyTests < Test::Unit::TestCase
     signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @sk.canonical_querystring)).chomp
     @params["signature"] = signature
     
-    @api = {"name" => "test_valid_login_api", 
+    @api = {"app_name" => "test_valid_login_api", 
             "api_key" => "835a3161dc4e71b", 
             "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
-    @login_api = LoginApi.new(@api)
-    @login_api.save
+    @api_secure_key = ApiSecureKey.new(@api)
+    @api_secure_key.save
   end
   
   def teardown
     @sk = nil
     @params = nil
-    @login_api.destroy
+    @api_secure_key.destroy
   end
   
   private
@@ -220,12 +220,12 @@ class SecureKeyTests < Test::Unit::TestCase
     @params
   end
   
-  def update_login_api(options={})
-    defaults = {"name" => "test_valid_login_api", 
+  def update_api_secure_key(options={})
+    defaults = {"app_name" => "test_valid_login_api", 
                 "api_key" => "835a3161dc4e71b", 
                 "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
     defaults.merge!(options)
-    @login_api.update(defaults)
+    @api_secure_key.update(defaults)
   end
   
 end

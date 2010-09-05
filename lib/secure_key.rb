@@ -131,7 +131,7 @@ module SecureKey
       def generate_api_key
         begin
           random = random_generator
-        end while LoginApi.first(:api_key => random)
+        end while ApiSecureKey.first(:api_key => random)
         random
       end
 
@@ -140,7 +140,7 @@ module SecureKey
           data = OpenSSL::BN.rand(512, -1, false).to_s
           digest = OpenSSL::Digest::SHA256.new(data).digest
           key = Base64.encode64(digest).chomp
-        end while LoginApi.first(:hash_key => key)
+        end while ApiSecureKey.first(:hash_key => key)
         key
       end
 
