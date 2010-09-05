@@ -125,39 +125,42 @@ module SecureKey
   end
   
   class Generate
-    
-    def self.generate_api_key
-      begin
-        random = random_generator
-      end while LoginApi.first(:api_key => random)
-      random
-    end
-  
-    def self.generate_hash_key
-      begin
-        data = OpenSSL::BN.rand(512, -1, false).to_s
-        digest = OpenSSL::Digest::SHA256.new(data).digest
-        key = Base64.encode64(digest).chomp
-      end while LoginApi.first(:hash_key => key)
-      key
-    end
-  end
-  
-  private
-  
-  def self.random_generator(opts={})
-      opts = {:chars => ('0'..'9').to_a + ('A'..'F').to_a + ('a'..'f').to_a,
-              :length => 8, :prefix => '', :suffix => '',
-              :verify => true, :attempts => 10}.merge(opts)
-      opts[:attempts].times do
-          filename = ''
-          opts[:length].times do
-              filename << opts[:chars][rand(opts[:chars].size)]
-          end
-          filename = opts[:prefix] + filename + opts[:suffix]
-          return filename unless opts[:verify] && File.exists?(filename)
+      
+    class << self
+      
+      def generate_api_key
+        begin
+          random = random_generator
+        end while LoginApi.first(:api_key => random)
+        random
       end
-      nil
+
+      def generate_hash_key
+        begin
+          data = OpenSSL::BN.rand(512, -1, false).to_s
+          digest = OpenSSL::Digest::SHA256.new(data).digest
+          key = Base64.encode64(digest).chomp
+        end while LoginApi.first(:hash_key => key)
+        key
+      end
+
+      private
+
+      def random_generator(opts={})
+          opts = {:chars => ('0'..'9').to_a + ('A'..'F').to_a + ('a'..'f').to_a,
+                  :length => 8, :prefix => '', :suffix => '',
+                  :verify => true, :attempts => 10}.merge(opts)
+          opts[:attempts].times do
+              filename = ''
+              opts[:length].times do
+                  filename << opts[:chars][rand(opts[:chars].size)]
+              end
+              filename = opts[:prefix] + filename + opts[:suffix]
+              return filename unless opts[:verify] && File.exists?(filename)
+          end
+          nil
+      end
+    end
+    
   end
-  
 end

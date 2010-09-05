@@ -16,24 +16,166 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   
   def test_index
     get '/'
+    
     assert_equal url_test, last_request.url
-    assert last_response.ok?
+    assert last_response, 302
+    assert_equal "/login_api", last_response.headers["Location"]
   end
-   
+  
+  # get by all
+  def test_get_all
+    get "/login_api"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
+  def test_get_by_api_key_xml
+    get "/login_api/all.xml"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "application/xml;charset=utf-8"
+  end
+  
+  #new 
   def test_new
-    get '/new'
-    assert_equal url_test("/new"), last_request.url
+    get '/login_api/new'
+    
+    assert_equal url_test("/login_api/new"), last_request.url
     assert last_response.ok?
     assert last_response.body.include?("App Name")
   end
   
+  # create
   def test_create
-    post '/create', {"app_name" => "TestCreate"}
+    post '/login_api/create', {"app_name" => "TestCreate"}
     
-    assert_equal url_test("/create"), last_request.url
-    assert last_response.ok?
-    assert last_response.body.include?("TestCreate")
+    assert_equal url_test("/login_api/create"), last_request.url
+    assert last_response, 302
   end
+  
+  def test_create_xml
+    header 'Content-Type', 'application/xml'
+    post '/login_api/create.xml', '<login_api><app_name>another app</app_name></login_api>'
+    
+    assert last_response, 201
+    assert_equal "application/xml;charset=utf-8", last_response.headers["Content-Type"]
+  end
+  
+ # edit
+ def test_edit
+   get "/login_api/#{@login_api.id}/edit"
+   
+   assert_equal url_test("/login_api/#{@login_api.id}/edit"), last_request.url
+   assert last_response.ok?
+   assert last_response.body.include?("Update")
+ end
+ 
+ 
+ #Update
+ def test_update
+   put "/login_api/update", {"id" => "#{@login_api.id}", "app_name" => "TestUpdate"}
+   
+   assert_equal url_test("/login_api/update"), last_request.url
+   assert last_response, 302
+   assert_equal "/login_api/#{@login_api.id}", last_response.headers["Location"]
+ end
+ 
+ def test_update_xml
+   header 'Content-Type', 'application/xml'
+   put "/login_api/update.xml", "<login_api><id type='integer'>#{@login_api.id}</id><app_name>new app</app_name></login_api>"
+   
+   assert_equal url_test("/login_api/update"), last_request.url
+   assert last_response, 202
+   assert_equal "application/xml;charset=utf-8", last_response.headers["Content-Type"]
+ end
+ 
+ #Delete
+ def test_delete
+   delete "/login_api/destroy", {"id" => "#{@login_api.id}"}
+   
+   assert_equal url_test("/login_api/destroy"), last_request.url
+   assert last_response, 302
+   assert_equal "/login_api", last_response.headers["Location"]
+ end
+ 
+ def test_update_xml
+   header 'Content-Type', 'application/xml'
+   put "/login_api/destroy.xml", "<login_api><id type='integer'>#{@login_api.id}</id></login_api>"
+   assert_equal url_test("/login_api/destroy"), last_request.url
+   assert last_response, 200
+   assert_equal "application/xml;charset=utf-8", last_response.headers["Content-Type"]
+ end
+
+ 
+ 
+  # get id
+  def test_get_by_id
+    get "/login_api/show/#{@login_api.id}"
+    
+    assert_equal url_test("/login_api/show/#{@login_api.id}"), last_request.url
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
+  def test_get_by_id_xml
+    get "/login_api/show/#{@login_api.id}.xml"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "application/xml;charset=utf-8"
+  end
+  
+  def test_get_by_id_failure
+    get "/login_api/show/00000"
+    
+    assert_equal last_response.status, 404
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
+  # get by app_name
+  def test_get_by_app_name
+    get "/login_api/app_name/#{@login_api.app_name}"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
+  def test_get_by_api_name_xml
+    get "/login_api/app_name/#{@login_api.app_name}.xml"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "application/xml;charset=utf-8"
+  end
+  
+  def test_get_by_app_name_failure
+    get "/login_api/app_name/shouldnotexist"
+    
+    assert_equal last_response.status, 404
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
+  # get by api_key
+  def test_get_by_api_key
+    get "/login_api/api_key/#{@login_api.api_key}"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
+  def test_get_by_api_key_xml
+    get "/login_api/api_key/#{@login_api.api_key}.xml"
+    
+    assert last_response.ok?
+    assert_equal last_response.content_type, "application/xml;charset=utf-8"
+  end
+  
+  def test_get_by_api_key_failure
+    get "/login_api/api_key/000000"
+    
+    assert_equal last_response.status, 404
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
+  end
+  
   
   ### Test Generate
   def test_generate_pass
@@ -45,7 +187,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     assert_equal last_response.content_type, 'application/pdf'
   end
   
-  ## failure tests
+  ## Test Generate Failures
   def test_generate_fail_authentication
     sig = @params["signature"]
     sig.gsub!(/\d/, 'A')
@@ -53,7 +195,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Signature failed"
   end
   
@@ -62,7 +204,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "api_key missing or incorrect"
   end
 
@@ -71,7 +213,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Incorrect or missing parameters"
   end
   
@@ -80,7 +222,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Incorrect hashtype"
   end
   
@@ -89,9 +231,10 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Too much time has passed. Request will need to be regenerated"
   end
+
     
   private 
   
@@ -117,7 +260,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @sk.canonical_querystring)).chomp
     @params["signature"] = signature
     
-    @api = {"name" => "test_valid_login_api", 
+    @api = {"app_name" => "test_valid_login_api", 
             "api_key" => "835a3161dc4e71b", 
             "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
     @login_api = LoginApi.new(@api)
@@ -142,7 +285,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
   def update_login_api(options={})
-    defaults = {"name" => "test_valid_login_api", 
+    defaults = {"app_name" => "test_valid_login_api", 
                 "api_key" => "835a3161dc4e71b", 
                 "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
     defaults.merge!(options)

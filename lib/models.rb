@@ -3,6 +3,7 @@ require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
 require 'dm-timestamps'
+require 'dm-serializer'
 
 DataMapper::Logger.new($stdout, :debug)
 
@@ -18,13 +19,16 @@ end
 class LoginApi
   include DataMapper::Resource
   property :id,           Serial
-  property :name,         String, :unique => true, :required => true
+  property :app_name,     String, :unique => true, :required => true
   property :api_key,      String, :unique => true, :required => true
   property :hash_key,     String, :unique => true, :required => true
   property :created_at,   DateTime
-  property :updated_at,   DateTime
+  property :created_on,   Date
   
-  validates_format_of :name, :with => /[\w\s\d]+/
+  property :updated_at,   DateTime
+  property :updated_on,   Date
+  
+  validates_format_of :app_name, :with => /^[\w\s\d]+$/
   validates_format_of :api_key, :with => /^[\w\d]+$/
   validates_format_of :hash_key, :with => /^[\w\d\/+]+=$/
 

@@ -16,29 +16,29 @@ class ModelTests < Test::Unit::TestCase
   
   # LoginApi Tests
   def test_invalid_name
-    login_api = LoginApi.new(:name => "adf   **")
+    login_api = LoginApi.new(:app_name => "adf   **")
     assert !login_api.valid?
-    assert_equal dm_default_message(:invalid, :name), login_api.errors.on(:name).first
+    assert_equal dm_default_message(:invalid, :app_name), login_api.errors.on(:app_name).first
   end
   
   def test_blank_name
     login_api = LoginApi.new
     assert !login_api.valid?
-    assert dm_default_message(:blank, :name), login_api.errors.on(:name).first
+    assert dm_default_message(:blank, :app_name), login_api.errors.on(:app_name).first
   end
   
   def test_unique_name_required
-    login_api = LoginApi.new(:name => "test_unique_name_required",
+    login_api = LoginApi.new(:app_name => "test_unique_name_required",
                              :api_key => "835a3161dc4e71b7",
                              :hash_key => "0b81d46ef348de79ea6b9a3bb841db35=")
     assert login_api.valid?
     assert login_api.save
-    login_api2 = LoginApi.new(:name => "test_unique_name_required",
+    login_api2 = LoginApi.new(:app_name => "test_unique_name_required",
                              :api_key => "1234",
                              :hash_key => "12345")
     assert !login_api2.valid?
     assert !login_api2.save
-    assert dm_default_message(:blank, :name), login_api2.errors.on(:name).first
+    assert dm_default_message(:blank, :app_name), login_api2.errors.on(:app_name).first
   end
   
   def test_invalid_login_api
@@ -73,7 +73,7 @@ class ModelTests < Test::Unit::TestCase
   end
   
   def test_valid_login_api
-    login_api = LoginApi.new(:name => "test_valid_login_api",
+    login_api = LoginApi.new(:app_name => "test_valid_login_api",
                              :api_key => "835a3161dc4e71b",
                              :hash_key => "0b81d46ef348de79ea6b9a3bb841db5=")
     

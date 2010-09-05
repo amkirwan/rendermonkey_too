@@ -1,0 +1,17 @@
+%h3 Edit #{la.app_name}
+
+%form{:action => "/login_api/update", :method => "post"}
+  %fieldset
+    %ul{:class => "no-list"}
+      %input{:type => "hidden", :name => "id", :value => "#{la.id}"}
+      %input{:type => "hidden", :name => "_method", :value =>"put"}
+      %li
+        %label{:for => "app_name", :class => "labels"}App Name
+        %input{:type => "text", :name => "app_name", :id => "app_name", :value => "#{la.app_name}"}
+      %li
+        %label{:for => "api_key", :class => "labels"}Api Key
+        %input{:type => "checkbox", :name => "api_key", :checked => "checked", :id => "api_key"}Update
+      %li
+        %label{:for => "hash_key", :class => "labels"}Hash Key
+        %input{:type => "checkbox", :name => "hash_key", :checked => "checked", :id => "hash_key"}Update
+    %input{:type => "submit", :value => "Update", :class => "button"}

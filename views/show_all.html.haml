@@ -1,0 +1,23 @@
+%h3 All Applications registered to generate PDFs
+
+%div
+  %a{ :href => "/login_api/new" } Create New Secure Key
+
+%ul{:class => "no-list"}
+  - la.each do |x|
+    %li.clear-both 
+      %span.bold Name:
+      = x.app_name
+    %li
+      %span.bold Api Key: 
+      = x.api_key
+    %li
+      %span.bold Hash Key: 
+      = x.hash_key
+    %li.last
+      %a.destroy{ :href => "/login_api/show/#{x.id}" } Show
+      %form{:action => "/login_api/destroy", :method => "post"}
+        %input{:type => "hidden", :name => "_method", :value => "delete"}
+        %input{:type => "hidden", :name => "id", :value => "#{x.id}"}
+        %div 
+          %button{:type => "submit"}Destroy

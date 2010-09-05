@@ -1,0 +1,18 @@
+%h3 Info for app #{la.app_name}
+
+%ul{:class => "no-list"}
+  %li 
+    %span.bold App Name: 
+    #{la.app_name}
+  %li 
+    %span.bold Api Key: 
+    #{la.api_key}
+  %li 
+    %span.bold Hash Key: 
+    #{la.hash_key}
+    %li.last
+      %form{:action => "/login_api/destroy", :method => "post"}
+        %input{:type => "hidden", :name => "_method", :value => "delete"}
+        %input{:type => "hidden", :name => "id", :value => "#{la.id}"}
+        %div 
+          %button{:type => "submit"}Destroy
