@@ -144,8 +144,6 @@ module SecureKey
         key
       end
 
-      private
-
       def random_generator(opts={})
           opts = {:chars => ('0'..'9').to_a + ('A'..'F').to_a + ('a'..'f').to_a,
                   :length => 8, :prefix => '', :suffix => '',

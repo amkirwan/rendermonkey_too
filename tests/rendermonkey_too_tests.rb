@@ -23,7 +23,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
   # get by all
-  def test_get_all
+  def test_get_all  
     get "/api_secure_key"
     
     assert last_response.ok?
@@ -264,7 +264,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
             "api_key" => "835a3161dc4e71b", 
             "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
     @api_secure_key = ApiSecureKey.new(@api)
-    @api_secure_key.save
+    @api_secure_key.save    
   end
   
   def teardown

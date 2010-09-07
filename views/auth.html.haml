@@ -1,0 +1,16 @@
+%h3 Admin Auth for RendermonkeyToo
+
+%form{:action => "/api_secure_key/auth", :method => "post"}  
+  %fieldset
+    %ul.no-list
+      %li 
+        %label{:for => "username", :class => "labels" }Username
+        %input{:type => "text", :name => "username", :id => "username"}   
+      %li
+        %label{:for => "password", :class => "labels" }Password
+        %input{:type => "password", :name => "password", :id => "password"} 
+      %li    
+        %input{:type => "submit", :value => "Submit", :class => "button"}            
+
+:javascript 
+  document.forms[0].password.focus()

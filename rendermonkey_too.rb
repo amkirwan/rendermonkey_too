@@ -10,17 +10,31 @@ require 'pdf'
 require 'models'
 
 Sinatra::Application.register Sinatra::RespondTo
-use Rack::MethodOverride
+use Rack::MethodOverride 
+       
+configure do
+  @@Login = OpenStruct.new( 
+    :admin_username => "admin", 
+    :admin_password => "changeme",
+    :admin_cookie_key => "rendermonkey_too_admin",
+    #:admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s    #uncomment to deploy
+    :admin_cookie_value => "abcdefg"   #comment to deploy
+  ) 
+end 
+
 
 error do
   e = request.env['sinatra.error']
   puts "#{e.class}: #{e.message}\n#{e.backtrace.join("\n  ")}"
-end
+end    
 
 before do
-  if (request.path_info == '/generate' || request.path_info == 'create')
+  if request.path_info == '/generate' || request.path_info == 'create'
     @sk = SecureKey::Digest.new
-  end
+  end 
+  
+  protected! unless request.path_info == '/generate' || request.path_info == '/api_secure_key/auth'     
+
 end
 
 helpers do
@@ -41,17 +55,37 @@ helpers do
     xml_params = Crack::XML.parse(xml)
     xml_params = xml_params.delete("api_secure_key") if xml_params.has_key?("api_secure_key")
     params.merge!(xml_params)
-  end
+  end  
   
+  def protected!          
+    unless request.cookies[@@Login.admin_cookie_key] == @@Login.admin_cookie_value
+      redirect '/api_secure_key/auth'
+    end
+  end
 end
 
 get '/' do
   redirect '/api_secure_key'
+end    
+
+get '/api_secure_key/auth' do
+  haml :auth
+end
+
+post '/api_secure_key/auth' do     
+  puts @@Login.admin_cookie_value
+  if params[:username] == @@Login.admin_username && params[:password] == @@Login.admin_password  
+    response.set_cookie(@@Login.admin_cookie_key, @@Login.admin_cookie_value)    
+    puts "here"
+    redirect '/api_secure_key'
+  else
+    stop [ 401, 'Not authorized' ]
+  end
 end
 
 get '/api_secure_key' do
   ask = ApiSecureKey.all
-  halt [ 404, "Api Key not found" ] unless ask
+  halt not_found("Api Key not found") unless ask
 
   respond_to do |format|
     format.html { haml :show_all, :locals => { :ask => ask } }
@@ -62,7 +96,7 @@ end
 #show
 get '/api_secure_key/show/:id' do
   ask = ApiSecureKey.get(params[:id])
-  halt [ 404, "ApiSecureKey not found" ] unless ask
+  halt not_found("ApiSecureKey not found") unless ask
   
   respond_to do |format|
     format.html { haml :show, :locals => { :ask => ask } }
@@ -73,7 +107,7 @@ end
 #show_by_app_name
 get '/api_secure_key/app_name/:app_name' do
   ask = ApiSecureKey.first(:app_name => params[:app_name])
-  halt [ 404, "Api Key not found" ] unless ask
+  halt not_found("Api Key not found") unless ask
 
   respond_to do |format|
     format.html { haml :show, :locals => { :ask => ask } }
@@ -84,7 +118,7 @@ end
 #show_by_api_key
 get '/api_secure_key/api_key/:api_key' do
   ask = ApiSecureKey.first(:api_key => params[:api_key])
-  halt [ 404, "Api Key not found" ] unless ask
+  halt not_found("Api Key not found") unless ask
   
   respond_to do |format|
     format.html { haml :show, :locals => { :ask => ask } }
