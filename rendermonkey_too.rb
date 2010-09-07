@@ -10,16 +10,17 @@ require 'pdf'
 require 'models'
 
 Sinatra::Application.register Sinatra::RespondTo
-use Rack::MethodOverride 
+use Rack::MethodOverride   
+
+enable :sessions
        
-configure do
+configure do 
   @@Login = OpenStruct.new( 
     :admin_username => "admin", 
     :admin_password => "changeme",
     :admin_cookie_key => "rendermonkey_too_admin",
-    #:admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s    #uncomment to deploy
-    :admin_cookie_value => "abcdefg"   #comment to deploy
-  ) 
+    :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s 
+  )   
 end 
 
 
@@ -33,7 +34,13 @@ before do
     @sk = SecureKey::Digest.new
   end 
   
-  protected! unless request.path_info == '/generate' || request.path_info == '/api_secure_key/auth'     
+  if request.content_type == "application/xml; charset=UTF-8"  
+    puts "$"*10 + "here" 
+  end
+  
+  protected! unless request.path_info == '/generate' || 
+                    request.path_info == '/api_secure_key/auth' ||
+                    request.content_type == "application/xml; charset=UTF-8" 
 
 end
 
@@ -58,10 +65,11 @@ helpers do
   end  
   
   def protected!          
-    unless request.cookies[@@Login.admin_cookie_key] == @@Login.admin_cookie_value
+    unless session[@@Login.admin_cookie_key] == @@Login.admin_cookie_value
       redirect '/api_secure_key/auth'
     end
-  end
+  end   
+ 
 end
 
 get '/' do
@@ -74,9 +82,8 @@ end
 
 post '/api_secure_key/auth' do     
   puts @@Login.admin_cookie_value
-  if params[:username] == @@Login.admin_username && params[:password] == @@Login.admin_password  
-    response.set_cookie(@@Login.admin_cookie_key, @@Login.admin_cookie_value)    
-    puts "here"
+  if params[:username] == @@Login.admin_username && params[:password] == @@Login.admin_password       
+    session[@@Login.admin_cookie_key] = @@Login.admin_cookie_value  
     redirect '/api_secure_key'
   else
     stop [ 401, 'Not authorized' ]
@@ -98,17 +105,6 @@ get '/api_secure_key/show/:id' do
   ask = ApiSecureKey.get(params[:id])
   halt not_found("ApiSecureKey not found") unless ask
   
-  respond_to do |format|
-    format.html { haml :show, :locals => { :ask => ask } }
-    format.xml { ask.to_xml }
-  end
-end
-
-#show_by_app_name
-get '/api_secure_key/app_name/:app_name' do
-  ask = ApiSecureKey.first(:app_name => params[:app_name])
-  halt not_found("Api Key not found") unless ask
-
   respond_to do |format|
     format.html { haml :show, :locals => { :ask => ask } }
     format.xml { ask.to_xml }

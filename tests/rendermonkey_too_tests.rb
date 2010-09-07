@@ -6,15 +6,22 @@ require 'rubygems'
 require 'test/unit'
 require 'rack/test'
 require 'rendermonkey_too'
+require 'session_data'
 
 class RendermonkeyTooTests < Test::Unit::TestCase
   include Rack::Test::Methods
   
   def app
     Sinatra::Application
+  end   
+  
+  def test_login
+    post '/api_secure_key/auth', {:username => "admin", :password => "changeme"}
+    assert last_response, 302
   end
   
   def test_index
+    login
     get '/'
     
     assert_equal url_test, last_request.url
@@ -23,22 +30,24 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
   # get by all
-  def test_get_all  
+  def test_get_all      
+    login
     get "/api_secure_key"
     
-    assert last_response.ok?
+    assert last_response.ok? 
     assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
-  def test_get_by_api_key_xml
+  def test_get_by_api_key_xml  
     get "/api_secure_key/all.xml"
     
     assert last_response.ok?
-    assert_equal last_response.content_type, "application/xml;charset=utf-8"
+    assert_equal last_response.content_type, "application/xml; charset=UTF-8"
   end
   
   #new 
-  def test_new
+  def test_new 
+    login
     get '/api_secure_key/new'
     
     assert_equal url_test("/api_secure_key/new"), last_request.url
@@ -47,14 +56,16 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
   # create
-  def test_create
+  def test_create  
+    login
     post '/api_secure_key/create', {"app_name" => "TestCreate"}
     
     assert_equal url_test("/api_secure_key/create"), last_request.url
     assert last_response, 302
   end
   
-  def test_create_xml
+  def test_create_xml  
+    login
     header 'Content-Type', 'application/xml'
     post '/api_secure_key/create.xml', '<api_secure_key><app_name>another app</app_name></api_secure_key>'
     
@@ -63,7 +74,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
  # edit
- def test_edit
+ def test_edit          
+   login
    get "/api_secure_key/#{@api_secure_key.id}/edit"
    
    assert_equal url_test("/api_secure_key/#{@api_secure_key.id}/edit"), last_request.url
@@ -73,7 +85,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
  
  
  #Update
- def test_update
+ def test_update 
+   login
    put "/api_secure_key/update", {"id" => "#{@api_secure_key.id}", "app_name" => "TestUpdate"}
    
    assert_equal url_test("/api_secure_key/update"), last_request.url
@@ -81,7 +94,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
    assert_equal "/api_secure_key/#{@api_secure_key.id}", last_response.headers["Location"]
  end
  
- def test_update_xml
+ def test_update_xml 
+   login
    header 'Content-Type', 'application/xml'
    put "/api_secure_key/update.xml", "<api_secure_key><id type='integer'>#{@api_secure_key.id}</id><app_name>new app</app_name></api_secure_key>"
    
@@ -91,7 +105,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
  end
  
  #Delete
- def test_delete
+ def test_delete    
+   login
    delete "/api_secure_key/destroy", {"id" => "#{@api_secure_key.id}"}
    
    assert_equal url_test("/api_secure_key/destroy"), last_request.url
@@ -99,7 +114,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
    assert_equal "/api_secure_key", last_response.headers["Location"]
  end
  
- def test_update_xml
+ def test_update_xml  
+   login
    header 'Content-Type', 'application/xml'
    put "/api_secure_key/destroy.xml", "<api_secure_key><id type='integer'>#{@api_secure_key.id}</id></api_secure_key>"
    assert_equal url_test("/api_secure_key/destroy"), last_request.url
@@ -110,7 +126,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
  
  
   # get id
-  def test_get_by_id
+  def test_get_by_id    
+    login
     get "/api_secure_key/show/#{@api_secure_key.id}"
     
     assert_equal url_test("/api_secure_key/show/#{@api_secure_key.id}"), last_request.url
@@ -118,58 +135,42 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
-  def test_get_by_id_xml
+  def test_get_by_id_xml 
+    login
     get "/api_secure_key/show/#{@api_secure_key.id}.xml"
     
     assert last_response.ok?
     assert_equal last_response.content_type, "application/xml;charset=utf-8"
   end
   
-  def test_get_by_id_failure
+  def test_get_by_id_failure 
+    login
     get "/api_secure_key/show/00000"
     
     assert_equal last_response.status, 404
     assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
-  # get by app_name
-  def test_get_by_app_name
-    get "/api_secure_key/app_name/#{@api_secure_key.app_name}"
-    
-    assert last_response.ok?
-    assert_equal last_response.content_type, "text/html;charset=utf-8"
-  end
-  
-  def test_get_by_api_name_xml
-    get "/api_secure_key/app_name/#{@api_secure_key.app_name}.xml"
-    
-    assert last_response.ok?
-    assert_equal last_response.content_type, "application/xml;charset=utf-8"
-  end
-  
-  def test_get_by_app_name_failure
-    get "/api_secure_key/app_name/shouldnotexist"
-    
-    assert_equal last_response.status, 404
-    assert_equal last_response.content_type, "text/html;charset=utf-8"
-  end
   
   # get by api_key
   def test_get_by_api_key
+    login
     get "/api_secure_key/api_key/#{@api_secure_key.api_key}"
     
     assert last_response.ok?
     assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
-  def test_get_by_api_key_xml
+  def test_get_by_api_key_xml      
+    login
     get "/api_secure_key/api_key/#{@api_secure_key.api_key}.xml"
     
     assert last_response.ok?
     assert_equal last_response.content_type, "application/xml;charset=utf-8"
   end
   
-  def test_get_by_api_key_failure
+  def test_get_by_api_key_failure 
+    login
     get "/api_secure_key/api_key/000000"
     
     assert_equal last_response.status, 404
@@ -235,20 +236,6 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     assert_equal last_response.body, "Too much time has passed. Request will need to be regenerated"
   end
 
-    
-  private 
-  
-  def url_test(path=nil)
-    site = "http://example.org"
-    if path.nil?
-      site + "/"
-    elsif /^\//.match(path)
-      site + path
-    else
-      site + '/' + path
-    end
-  end
-  
   def setup
     @sk = SecureKey::Digest.new
     @params = {"timestamp" => "#{Time.now.utc.iso8601}", 
@@ -264,7 +251,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
             "api_key" => "835a3161dc4e71b", 
             "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
     @api_secure_key = ApiSecureKey.new(@api)
-    @api_secure_key.save    
+    @api_secure_key.save     
   end
   
   def teardown
@@ -273,7 +260,28 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     @api_secure_key.destroy
   end
   
-  private
+  private  
+  
+  def url_test(path=nil)
+    site = "http://example.org"
+    if path.nil?
+      site + "/"
+    elsif /^\//.match(path)
+      site + path
+    else
+      site + '/' + path
+    end
+  end
+  
+  def login
+    post '/api_secure_key/auth', {:username => "admin", :password => "changeme"}
+  end     
+  
+  def xml_request(params)     
+    @xml_params = "<api_secure_key><id>#{@api_secure_key.id}</id><api_key>#{@api_secure_key.api_key}</api_key></api_secure_key>"  
+    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @xml_params)).chomp
+    @xml_params += "<signature>#{signature}</signature>"
+  end
 
   def edit_params(hash_key=nil, options={})
     @params.merge!(options)
