@@ -1,4 +1,6 @@
-%h3 Edit #{ask.app_name}
+.header
+  %h3 Edit #{ask.app_name}   
+  %a{:href => "/api_secure_key/logout"} logout
 
 %form{:action => "/api_secure_key/update", :method => "post"}
   %fieldset

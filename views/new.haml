@@ -1,4 +1,6 @@
-%h3 Enter Name for an app to generate a API key and Secure Hash Key
+.header
+  %h3 Create new Api Secure Key  
+  %a{:href => "/api_secure_key/logout"} logout
 
 %form{:action => "/api_secure_key/create", :method => "post"}
   %fieldset

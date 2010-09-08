@@ -1,4 +1,7 @@
-%h3 Info for app #{ask.app_name}
+.header
+  %h3 Application #{ask.app_name}   
+  %a{:href => "/api_secure_key"} show all
+  %a{:href => "/api_secure_key/logout"} logout
 
 %ul{:class => "no-list"}
   %li 

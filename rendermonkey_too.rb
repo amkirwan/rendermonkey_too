@@ -1,15 +1,12 @@
 require 'rubygems'
 require 'sinatra'
 require 'haml'
-require 'sinatra/respond_to'
-require 'crack'
 
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 require 'secure_key'
 require 'pdf'
 require 'models'
 
-Sinatra::Application.register Sinatra::RespondTo
 use Rack::MethodOverride   
 
 enable :sessions
@@ -19,7 +16,8 @@ configure do
     :admin_username => "admin", 
     :admin_password => "changeme",
     :admin_cookie_key => "rendermonkey_too_admin",
-    :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s 
+    #:admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
+    :admin_cookie_value => "abcdefg"
   )   
 end 
 
@@ -34,13 +32,7 @@ before do
     @sk = SecureKey::Digest.new
   end 
   
-  if request.content_type == "application/xml; charset=UTF-8"  
-    puts "$"*10 + "here" 
-  end
-  
-  protected! unless request.path_info == '/generate' || 
-                    request.path_info == '/api_secure_key/auth' ||
-                    request.content_type == "application/xml; charset=UTF-8" 
+  protected! unless request.path_info == '/generate' || request.path_info == '/api_secure_key/auth'
 
 end
 
@@ -58,13 +50,7 @@ helpers do
     "#{base_url}api_secure_key/#{lp.id}"
   end
   
-  def process_xml(xml)
-    xml_params = Crack::XML.parse(xml)
-    xml_params = xml_params.delete("api_secure_key") if xml_params.has_key?("api_secure_key")
-    params.merge!(xml_params)
-  end  
-  
-  def protected!          
+  def protected!         
     unless session[@@Login.admin_cookie_key] == @@Login.admin_cookie_value
       redirect '/api_secure_key/auth'
     end
@@ -81,23 +67,25 @@ get '/api_secure_key/auth' do
 end
 
 post '/api_secure_key/auth' do     
-  puts @@Login.admin_cookie_value
-  if params[:username] == @@Login.admin_username && params[:password] == @@Login.admin_password       
+  if params[:username] == @@Login.admin_username && params[:password] == @@Login.admin_password      
     session[@@Login.admin_cookie_key] = @@Login.admin_cookie_value  
     redirect '/api_secure_key'
   else
     stop [ 401, 'Not authorized' ]
   end
+end   
+
+
+get '/api_secure_key/logout' do
+  session.clear
+  redirect '/api_secure_key/auth'
 end
 
 get '/api_secure_key' do
   ask = ApiSecureKey.all
   halt not_found("Api Key not found") unless ask
-
-  respond_to do |format|
-    format.html { haml :show_all, :locals => { :ask => ask } }
-    format.xml { ask.to_xml }
-  end
+  
+  haml :show_all, :locals => { :ask => ask }
 end
 
 #show
@@ -105,21 +93,15 @@ get '/api_secure_key/show/:id' do
   ask = ApiSecureKey.get(params[:id])
   halt not_found("ApiSecureKey not found") unless ask
   
-  respond_to do |format|
-    format.html { haml :show, :locals => { :ask => ask } }
-    format.xml { ask.to_xml }
-  end
+  haml :show, :locals => { :ask => ask }
 end
 
 #show_by_api_key
 get '/api_secure_key/api_key/:api_key' do
   ask = ApiSecureKey.first(:api_key => params[:api_key])
   halt not_found("Api Key not found") unless ask
-  
-  respond_to do |format|
-    format.html { haml :show, :locals => { :ask => ask } }
-    format.xml { ask.to_xml }
-  end
+
+  haml :show, :locals => { :ask => ask }
 end
 
 #new
@@ -129,22 +111,11 @@ end
 
 #create
 post '/api_secure_key/create' do
-  if request.content_type == "application/xml"
-    process_xml(request.body.read.to_s)
-  end
-  
   ask = ApiSecureKey.new(:app_name => params["app_name"],
                     :api_key => SecureKey::Generate.generate_api_key,
                     :hash_key => SecureKey::Generate.generate_hash_key)
   if ask.save
-    respond_to do |format|
-      format.html { redirect "/api_secure_key/show/#{ask.id}"}
-      format.xml do 
-        status(201)
-        response['Location'] = api_secure_key_url(ask)
-        ask.to_xml
-      end
-    end
+    redirect "/api_secure_key/show/#{ask.id}"
   else
     status(412)
     "Error: Creating Login API Key: #{ask.errors.on(:app_name)}"
@@ -160,22 +131,13 @@ end
 
 # udpate /api_secure_key/update
 put '/api_secure_key/update' do
-  if request.content_type == "application/xml"
-    process_xml(request.body.read.to_s)
-  end
   ask = ApiSecureKey.get(params[:id])
   ask.api_key = SecureKey::Generate.generate_api_key if params[:api_key] == "checked"
   ask.hash_key = SecureKey::Generate.generate_hash_key if params[:hash_key] == "checked"
   ask.app_name = params["app_name"]
   
   if ask.save
-    respond_to do |format|
-      format.html { redirect "/api_secure_key/#{ask.id}" }
-      format.xml do 
-        status(202)
-        ask.to_xml
-      end
-    end
+    redirect "/api_secure_key/#{ask.id}"
   else
     status(412)
     "Error updating Login Api"
@@ -183,22 +145,13 @@ put '/api_secure_key/update' do
 end
 
 delete '/api_secure_key/destroy' do
-  if request.content_type == "application/xml"
-    process_xml(request.body.read.to_s)
-  end
   ask = ApiSecureKey.get(params[:id])
   if ask.destroy
-    respond_to do |format|
-      format.html { redirect "/api_secure_key" }
-      format.xml do
-        status(200)
-        "Delete succeeded"
-      end
-    end
+    redirect "/api_secure_key"
   else
-      status(412)
-      "Error destroying Login Api"
-    end
+    status(412)
+    "Error destroying Login Api"
+  end  
   
 end
 
