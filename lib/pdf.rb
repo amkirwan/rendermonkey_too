@@ -1,8 +1,7 @@
+require 'secure_key' 
 
 module PDF
   class Generator   
-    
-    require 'secure_key'
     
     class << self 
       def generate(params)
