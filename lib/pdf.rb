@@ -1,6 +1,8 @@
 
 module PDF
-  class Generator
+  class Generator   
+    
+    require 'secure_key'
     
     class << self 
       def generate(params)
@@ -13,7 +15,7 @@ module PDF
         # if the file exists keep looping until we find one that doesn't exist
         begin
           time_string = Time.now.strftime("H%M%S").to_s
-          random = random_generator
+          random = SecureKey::Generate.random_generator
           fName = random + time_string
           f_path_html =  location + "/" + fName + '.html'
           f_path_pdf = location + "/" + fName + '.pdf'

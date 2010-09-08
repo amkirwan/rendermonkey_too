@@ -178,24 +178,5 @@ post '/generate' do
     @sk.error_message
   end
 end
-
-private
-
-def random_generator(opts={})
-    opts = {:chars => ('0'..'9').to_a + ('A'..'F').to_a + ('a'..'f').to_a,
-            :length => 8, :prefix => '', :suffix => '',
-            :verify => true, :attempts => 10}.merge(opts)
-    opts[:attempts].times do
-        filename = ''
-        opts[:length].times do
-            filename << opts[:chars][rand(opts[:chars].size)]
-        end
-        filename = opts[:prefix] + filename + opts[:suffix]
-        return filename unless opts[:verify] && File.exists?(filename)
-    end
-    nil
-end
-
-
   
 	
