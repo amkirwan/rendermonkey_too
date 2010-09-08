@@ -52,7 +52,7 @@ module PDF
             end
             
             opts += key_temp.insert(0, "--") + " "
-            opts += "'#{value}'" unless value == "true"
+            opts += "'#{value}' " unless value == "true"
           end
         end
         return opts
