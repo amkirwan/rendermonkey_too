@@ -4,11 +4,11 @@ module PDF
   class Generator   
     
     class << self   
-      
+                    
       def generate(params)    
         opts = self.process_options(params)
-        cmd = "/usr/local/bin/wkhtmltopdf -q - -"
-          
+        cmd = "#{@@wkhtmltopdf} -q - -"
+                                                                                          
         pdf = nil
         IO.popen(cmd, 'w+') do |subprocess|
           subprocess.write(params[:page])

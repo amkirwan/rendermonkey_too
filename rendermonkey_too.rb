@@ -12,13 +12,15 @@ use Rack::MethodOverride
 enable :sessions
        
 configure do 
-  @@Login = OpenStruct.new( 
+  @@login = OpenStruct.new( 
     :admin_username => "admin", 
     :admin_password => "B0rn2BW!ld",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
     #:admin_cookie_value => "abcdefg"
-  )   
+  )    
+  @@wkhtmltopdf = File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-amd64")   
+  #@@wkhtmltopdf = File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-i386") 
 end 
 
 
@@ -51,7 +53,7 @@ helpers do
   end
   
   def protected!         
-    unless session[@@Login.admin_cookie_key] == @@Login.admin_cookie_value
+    unless session[@@login.admin_cookie_key] == @@login.admin_cookie_value
       redirect '/api_secure_key/auth'
     end
   end   
@@ -67,8 +69,8 @@ get '/api_secure_key/auth' do
 end
 
 post '/api_secure_key/auth' do     
-  if params[:username] == @@Login.admin_username && params[:password] == @@Login.admin_password      
-    session[@@Login.admin_cookie_key] = @@Login.admin_cookie_value  
+  if params[:username] == @@login.admin_username && params[:password] == @@login.admin_password      
+    session[@@login.admin_cookie_key] = @@login.admin_cookie_value  
     redirect '/api_secure_key'
   else
     stop [ 401, 'Not authorized' ]
