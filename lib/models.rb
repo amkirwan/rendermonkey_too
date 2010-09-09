@@ -13,7 +13,7 @@ configure :production do
 end
 
 configure :development do 
-  DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/secure_pdf_development.sqlite3")
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/secure_pdf_development.sqlite3")
 end
 
 configure :test do
