@@ -160,18 +160,19 @@ post '/generate' do
   api_secure_key = ApiSecureKey.first(:api_key => params["api_key"])
 
   if @sk.signature_match(api_secure_key, params)
-    pdf_file = PDF::Generator.generate(params)
-  
     if params["name"].nil?
       report_type = "Untitl.pdf"
     else
       report_type = params["name"] + ".pdf"
-    end
-  
-    send_file pdf_file,
-              :disposition => 'attachment',
-              :filename => report_type,
-              :type => 'application/pdf'
+    end   
+    
+    pdf = PDF::Generator.generate(params)
+    headers({"Content-Type" => "application/pdf",
+             "Content-Disposition" => "attachment; #{report_type}",
+             "Content-Length" => pdf.size.to_s,
+             "Content-Transfer-Encoding" => "binary"
+             })
+    throw :halt, [200, [pdf]]
   else
     status(412)
     puts "*"*10 + @sk.error_message + "*"*10

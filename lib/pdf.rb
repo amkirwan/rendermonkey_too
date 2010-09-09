@@ -3,41 +3,19 @@ require 'secure_key'
 module PDF
   class Generator   
     
-    class << self 
-      def generate(params)
-        if ENV['RACK_ENV'] == "test"
-          location = File.join(Dir.getwd, "../", "tmp")
-          puts location
-        else
-          location = File.join(Dir.getwd, "tmp")
-        end
-        # if the file exists keep looping until we find one that doesn't exist
-        begin
-          time_string = Time.now.strftime("H%M%S").to_s
-          random = SecureKey::Generate.random_generator
-          fName = random + time_string
-          f_path_html =  location + "/" + fName + '.html'
-          f_path_pdf = location + "/" + fName + '.pdf'
-        end while FileTest.exist?(f_path_pdf)
-
-        f = File.open(f_path_html, "w")
-        begin
-          f.write(params["page"])
-        rescue Errno::ENOENT => e
-          puts e
-          puts "Could not open file"
-        rescue IOError => e
-          puts e
-          puts "Could not write to file"
-        ensure
-          f.close unless f.nil?
-        end
-
+    class << self   
+      
+      def generate(params)    
         opts = self.process_options(params)
-        
-        puts "*"*10 + opts
-        system("/usr/local/bin/wkhtmltopdf #{f_path_html} #{f_path_pdf} #{opts}")
-        f_path_pdf
+        cmd = "/usr/local/bin/wkhtmltopdf -q - -"
+          
+        pdf = nil
+        IO.popen(cmd, 'w+') do |subprocess|
+          subprocess.write(params[:page])
+          subprocess.close_write
+          pdf = subprocess.read
+        end
+        return pdf 
       end
  
       def process_options(params)
