@@ -14,10 +14,10 @@ enable :sessions
 configure do 
   @@Login = OpenStruct.new( 
     :admin_username => "admin", 
-    :admin_password => "changeme",
+    :admin_password => "B0rn2BW!ld",
     :admin_cookie_key => "rendermonkey_too_admin",
-    #:admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
-    :admin_cookie_value => "abcdefg"
+    :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
+    #:admin_cookie_value => "abcdefg"
   )   
 end 
 
