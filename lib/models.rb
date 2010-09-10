@@ -9,7 +9,7 @@ require 'dm-sqlite-adapter'
 DataMapper::Logger.new($stdout, :debug)  
 
 configure :production do 
-  DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/db/secure_pdf.sqlite3")
+  DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/db/secure_pdf.sqlite3")
 end
 
 configure :development do 
