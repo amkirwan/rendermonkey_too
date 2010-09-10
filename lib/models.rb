@@ -3,8 +3,9 @@ require 'dm-core'
 require 'dm-migrations'
 require 'dm-validations'
 require 'dm-timestamps'
-require 'dm-serializer' 
-require 'dm-sqlite-adapter'
+require 'dm-serializer'   
+require 'dm-postgres-adapter'
+#require 'dm-sqlite-adapter'
 
 DataMapper::Logger.new($stdout, :debug)  
 
