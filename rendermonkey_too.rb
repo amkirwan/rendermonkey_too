@@ -18,9 +18,7 @@ configure do
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
     #:admin_cookie_value => "abcdefg"
-  )    
-  set :wkhtmltopdf, File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-amd64")   
-  #set :wkhtmltopdf, File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-i386") 
+  )     
 end 
 
 error do

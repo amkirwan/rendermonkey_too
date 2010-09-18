@@ -2,12 +2,14 @@ require 'secure_key'
 
 module PDF
   class Generator   
+    #@wkhtmltopdf = File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-amd64")   
+    @wkhtmltopdf = File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-i386")
     
     class << self   
                     
       def generate(params)    
-        opts = self.process_options(params)
-        cmd = "#{options.wkhtmltopdf} -q #{opts} - -"
+        opts = self.process_options(params) 
+        cmd = "#{@wkhtmltopdf} -q #{opts} - -"
                                                                                           
         pdf = nil
         IO.popen(cmd, 'w+') do |subprocess|
