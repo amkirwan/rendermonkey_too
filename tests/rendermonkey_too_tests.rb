@@ -15,7 +15,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end   
   
   def test_login
-    post '/api_secure_key/auth', {:username => "admin", :password => "changeme"}
+    post '/api_secure_key/auth', {:username => "admin", :password => "test_password"}
     assert last_response, 302
   end    
   
@@ -229,7 +229,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   end
   
   def login
-    post '/api_secure_key/auth', {:username => "admin", :password => "changeme"}
+    post '/api_secure_key/auth', {:username => "admin", :password => "test_password"}
   end     
   
   def xml_request(params)     
