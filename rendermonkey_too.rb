@@ -5,7 +5,7 @@ require 'haml'
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 require 'secure_key'
 require 'pdf'
-require 'models' 
+require 'models'
 
 use Rack::MethodOverride   
 
