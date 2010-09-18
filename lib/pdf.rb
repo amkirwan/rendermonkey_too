@@ -2,8 +2,8 @@ require 'secure_key'
 
 module PDF
   class Generator   
-    #@wkhtmltopdf = File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-amd64")   
-    @wkhtmltopdf = File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-i386")
+    @wkhtmltopdf = File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-amd64")   
+    #@wkhtmltopdf = File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-i386")
     
     class << self   
                     
