@@ -7,7 +7,7 @@ module PDF
                     
       def generate(params)    
         opts = self.process_options(params)
-        cmd = "#{@@wkhtmltopdf} -q #{opts} - -"
+        cmd = "#{options.wkhtmltopdf} -q #{opts} - -"
                                                                                           
         pdf = nil
         IO.popen(cmd, 'w+') do |subprocess|

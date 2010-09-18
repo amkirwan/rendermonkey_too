@@ -10,19 +10,18 @@ require 'models'
 use Rack::MethodOverride   
 
 enable :sessions
-       
+
 configure do 
-  @@login = OpenStruct.new( 
+  set :login, OpenStruct.new( 
     :admin_username => "admin", 
     :admin_password => "B0rn2BW!ld",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
     #:admin_cookie_value => "abcdefg"
   )    
-  @@wkhtmltopdf = File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-amd64")   
-  #@@wkhtmltopdf = File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-i386") 
+  set :wkhtmltopdf, File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-amd64")   
+  #set :wkhtmltopdf, File.join(File.dirname(__FILE__), "vendor", "wkhtmltopdf-i386") 
 end 
-
 
 error do
   e = request.env['sinatra.error']
@@ -35,11 +34,9 @@ before do
   end 
   
   protected! unless request.path_info == '/generate' || request.path_info == '/api_secure_key/auth'
-
 end
 
 helpers do
-  
   def base_url
     if Sinatra::Application.port == 80
       "http://#{Sinatra::Application.bind}/"
@@ -53,11 +50,10 @@ helpers do
   end
   
   def protected!         
-    unless session[@@login.admin_cookie_key] == @@login.admin_cookie_value
+    unless session[options.login.admin_cookie_key] == options.login.admin_cookie_value
       redirect '/api_secure_key/auth'
     end
   end   
- 
 end
 
 get '/' do
@@ -69,8 +65,8 @@ get '/api_secure_key/auth' do
 end
 
 post '/api_secure_key/auth' do     
-  if params[:username] == @@login.admin_username && params[:password] == @@login.admin_password      
-    session[@@login.admin_cookie_key] = @@login.admin_cookie_value  
+  if params[:username] == options.login.admin_username && params[:password] == options.login.admin_password      
+    session[options.login.admin_cookie_key] = options.login.admin_cookie_value  
     redirect '/api_secure_key'
   else
     stop [ 401, 'Not authorized' ]
@@ -153,8 +149,7 @@ delete '/api_secure_key/destroy' do
   else
     status(412)
     "Error destroying Login Api"
-  end  
-  
+  end   
 end
 
 
