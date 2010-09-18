@@ -5,7 +5,8 @@ require 'haml'
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 require 'secure_key'
 require 'pdf'
-require 'models'
+require 'models' 
+require 'config'
 
 use Rack::MethodOverride   
 
@@ -15,7 +16,6 @@ configure do
   set :login, OpenStruct.new( 
     :admin_username => "admin", 
     :admin_password => "test_password", 
-    #:admin_password => "B0rn2BW!ld",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
     #:admin_cookie_value => "abcdefg"
