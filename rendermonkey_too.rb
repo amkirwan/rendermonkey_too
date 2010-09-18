@@ -15,7 +15,7 @@ configure do
   set :login, OpenStruct.new( 
     :admin_username => "admin", 
     :admin_password => "test_password", 
-    #admin_password => "Enter Deploy Password",
+    #:admin_password => "Enter Deploy Password",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
   )     
