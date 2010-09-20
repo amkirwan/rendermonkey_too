@@ -67,7 +67,7 @@ post '/api_secure_key/auth' do
     session[options.login.admin_cookie_key] = options.login.admin_cookie_value  
     redirect '/api_secure_key'
   else
-    stop [ 401, 'Not authorized' ]
+    halt 401, 'Not authorized'
   end
 end   
 
@@ -167,7 +167,7 @@ post '/generate' do
              "Content-Length" => pdf.size.to_s,
              "Content-Transfer-Encoding" => "binary"
              })
-    throw :halt, [200, [pdf]]
+   halt 200, pdf
   else
     status(412)
     puts "*"*10 + @sk.error_message + "*"*10
