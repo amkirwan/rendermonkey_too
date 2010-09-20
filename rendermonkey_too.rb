@@ -18,7 +18,9 @@ configure do
     #:admin_password => "Enter Deploy Password",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
-  )     
+  ) 
+  
+  set :wkhtmltopdf_cmd, "i386" #"amd64"
 end 
 
 error do
@@ -161,7 +163,7 @@ post '/generate' do
       report_type = params["name"] + ".pdf"
     end   
     
-    pdf = PDF::Generator.generate(params)
+    pdf = PDF::Generator.generate(options.wkhtmltopdf_cmd, params)
     headers({"Content-Type" => "application/pdf",
              "Content-Disposition" => "attachment; #{report_type}",
              "Content-Length" => pdf.size.to_s,
