@@ -156,20 +156,15 @@ end
 post '/generate' do
   api_secure_key = ApiSecureKey.first(:api_key => params["api_key"])
 
-  if @sk.signature_match(api_secure_key, params)
-    if params["name"].nil?
-      report_type = "Untitl.pdf"
-    else
-      report_type = params["name"] + ".pdf"
-    end   
+  if @sk.signature_match(api_secure_key, params)    
+    report_type = (params["name"].nil? && 'Untitled.pdf') || params["name"] + ".pdf"
     
     pdf = PDF::Generator.generate(options.wkhtmltopdf_cmd, params)
-    headers({"Content-Type" => "application/pdf",
-             "Content-Disposition" => "attachment; #{report_type}",
-             "Content-Length" => pdf.size.to_s,
-             "Content-Transfer-Encoding" => "binary"
-             })
-   halt 200, pdf
+    response["Content-Type"] = "application/pdf"
+    response["Content-Disposition"] = "attachment; filename=#{report_type}"
+    response["Content-Length"] = pdf.size.to_s
+    response["Content-Transfer-Encoding"] = "binary"
+    halt 200, pdf
   else
     status(412)
     puts "*"*10 + @sk.error_message + "*"*10
