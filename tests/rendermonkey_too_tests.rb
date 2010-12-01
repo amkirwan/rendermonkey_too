@@ -16,13 +16,13 @@ class RendermonkeyTooTests < Test::Unit::TestCase
   
   def test_login
     post '/api_secure_key/auth', {:username => "admin", :password => "test_password"}
-    assert last_response, 302
+    assert_equal last_response.status, 302 
   end    
   
   def test_logout
     get "/api_secure_key/logout"
     
-    assert last_response, 302
+    assert_equal last_response.status, 302 
   end
   
   def test_index
@@ -30,8 +30,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     get '/'
     
     assert_equal url_test, last_request.url
-    assert last_response, 302
-    assert_equal "/api_secure_key", last_response.headers["Location"]
+    assert_equal last_response.status, 302
+    assert_equal url_test("/api_secure_key"), last_response.headers["Location"]
   end
   
   # get by all
@@ -40,7 +40,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     get "/api_secure_key"
     
     assert last_response.ok? 
-    assert_equal last_response.content_type, "text/html"
+    assert_equal "text/html;charset=utf-8", last_response.content_type
   end
   
   #new 
@@ -59,7 +59,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/api_secure_key/create', {"app_name" => "TestCreate"}
     
     assert_equal url_test("/api_secure_key/create"), last_request.url
-    assert last_response, 302
+    assert_equal last_response.status, 302
   end
   
  # edit
@@ -79,8 +79,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
    put "/api_secure_key/update", {"id" => "#{@api_secure_key.id}", "app_name" => "TestUpdate"}
    
    assert_equal url_test("/api_secure_key/update"), last_request.url
-   assert last_response, 302
-   assert_equal "/api_secure_key/#{@api_secure_key.id}", last_response.headers["Location"]
+   assert_equal last_response.status, 302
+   assert_equal url_test("api_secure_key/#{@api_secure_key.id}"), last_response.headers["Location"]
  end
  
  
@@ -90,8 +90,8 @@ class RendermonkeyTooTests < Test::Unit::TestCase
    delete "/api_secure_key/destroy", {"id" => "#{@api_secure_key.id}"}
    
    assert_equal url_test("/api_secure_key/destroy"), last_request.url
-   assert last_response, 302
-   assert_equal "/api_secure_key", last_response.headers["Location"]
+   assert_equal last_response.status, 302
+   assert_equal url_test("api_secure_key"), last_response.headers["Location"]
  end
  
  
@@ -100,9 +100,9 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     login
     get "/api_secure_key/show/#{@api_secure_key.id}"
     
-    assert_equal url_test("/api_secure_key/show/#{@api_secure_key.id}"), last_request.url
+    assert_equal url_test("api_secure_key/show/#{@api_secure_key.id}"), last_request.url
     assert last_response.ok?
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
   
@@ -111,7 +111,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     get "/api_secure_key/show/00000"
     
     assert_equal last_response.status, 404
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
   
@@ -121,7 +121,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     get "/api_secure_key/api_key/#{@api_secure_key.api_key}"
     
     assert last_response.ok?
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
   def test_get_by_api_key_failure 
@@ -129,7 +129,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     get "/api_secure_key/api_key/000000"
     
     assert_equal last_response.status, 404
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
   end
   
   
@@ -151,7 +151,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Signature failed"
   end
   
@@ -160,7 +160,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "api_key missing or incorrect"
   end
 
@@ -169,7 +169,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Incorrect or missing parameters"
   end
   
@@ -178,7 +178,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Incorrect hashtype"
   end
   
@@ -187,7 +187,7 @@ class RendermonkeyTooTests < Test::Unit::TestCase
     post '/generate', @params
     
     assert_equal last_response.status, 412
-    assert_equal last_response.content_type, "text/html"
+    assert_equal last_response.content_type, "text/html;charset=utf-8"
     assert_equal last_response.body, "Too much time has passed. Request will need to be regenerated"
   end
 
