@@ -1,4 +1,9 @@
 ENV['RACK_ENV'] = "production" 
 
-require 'rendermonkey_too'
-run Sinatra::Application
+require 'rubygems'
+require 'bundler/setup'
+
+Bundler.require(:default) 
+
+require './rendermonkey_too'
+run RendermonkeyToo
