@@ -6,4 +6,4 @@ require 'bundler/setup'
 Bundler.require(:default) 
 
 require './rendermonkey_too'
-run RendermonkeyToo
+run Sinatra::Application
