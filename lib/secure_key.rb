@@ -7,8 +7,11 @@ require 'time'
 module SecureKey
   
   class Digest
-    
-    @@max_time = 300
+      
+    class << self
+      attr_accessor :max_time
+    end
+    @max_time = 300
     
     attr_accessor :params_signature, :canonical_querystring, :params_timestamp, :error_message, :hashtype 
     
@@ -102,7 +105,7 @@ module SecureKey
     def timestamp_diff
       #max time diff is 300sec or 5 minutes
       time_diff = Time.now.utc - self.params_timestamp
-      if time_diff > @@max_time
+      if time_diff > Digest.max_time
         throw :params_error, "Too much time has passed. Request will need to be regenerated"
       end
     end
