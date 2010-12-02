@@ -6,8 +6,7 @@ This server can create PDF files which can be sent back to the browser from an H
 
 ### Installation
 	git clone git@github.com:amkirwan/rendermonkey_too.git
-	gem install data_mapper dm-sqlite-adapter
-	gem install sinatra
+	bundle install
 	
 ### To run
 	ruby rendermonkey_too.rb
