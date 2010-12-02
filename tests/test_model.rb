@@ -1,13 +1,9 @@
 # needs to run first
 ENV['RACK_ENV'] = "test"
 
-$LOAD_PATH << File.join(Dir.getwd, "..")
-require 'rubygems'
-require 'test/unit'
-require 'rack/test'
-require 'rendermonkey_too'
+require File.expand_path('../test_helper', __FILE__)
 
-class ModelTests < Test::Unit::TestCase
+class TestModel < Test::Unit::TestCase
   include Rack::Test::Methods
   
   def app
@@ -78,7 +74,8 @@ class ModelTests < Test::Unit::TestCase
                              :hash_key => "0b81d46ef348de79ea6b9a3bb841db5=")
     
     assert api_secure_key.save
-  end
+    api_secure_key.destroy 
+  end 
   
   private
   

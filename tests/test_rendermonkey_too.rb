@@ -1,13 +1,9 @@
 # needs to run first
 ENV['RACK_ENV'] = "test"
 
-$LOAD_PATH << File.join(Dir.getwd, "..")
-require 'rubygems'
-require 'test/unit'
-require 'rack/test'
-require 'rendermonkey_too'
+require File.expand_path('../test_helper', __FILE__) 
 
-class RendermonkeyTooTests < Test::Unit::TestCase
+class TestRendermonkeyToo < Test::Unit::TestCase
   include Rack::Test::Methods
   
   def app

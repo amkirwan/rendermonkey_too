@@ -1,14 +1,9 @@
 # needs to run first 
 ENV['RACK_ENV'] = "test"
 
-$LOAD_PATH << File.join(Dir.getwd, "..")
-require 'rubygems'                                                            
-require 'test/unit'
-require 'rack/test'
-require 'rendermonkey_too'
+require File.expand_path('../test_helper', __FILE__) 
 
-
-class SecureKeyTests < Test::Unit::TestCase
+class TestSecureKey < Test::Unit::TestCase
   include Rack::Test::Methods
   
   def app
@@ -182,13 +177,5 @@ class SecureKeyTests < Test::Unit::TestCase
     @api_secure_key.update(defaults)
   end
 
-  
-  def update_api_secure_key(options={})
-    defaults = {"app_name" => "test_valid_login_api", 
-                "api_key" => "835a3161dc4e71b", 
-                "hash_key" => "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4="}
-    defaults.merge!(options)
-    @api_secure_key.update(defaults)
-  end
   
 end
