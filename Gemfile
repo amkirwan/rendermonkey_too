@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 
 gem "sinatra", "~> 1.1.0" 
-gem "haml", "~> 3.0.24"
+gem "haml", "~> 3.0.25"
 gem "dm-core", "~> 1.0.2"
 gem "dm-migrations", "~> 1.0.2"
 gem "dm-serializer", "~> 1.0.2"

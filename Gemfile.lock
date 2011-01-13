@@ -32,7 +32,7 @@ GEM
       data_objects (= 0.10.2)
     extlib (0.9.15)
     fastercsv (1.5.3)
-    haml (3.0.24)
+    haml (3.0.25)
     json_pure (1.4.6)
     rack (1.2.1)
     rack-test (0.5.6)
@@ -53,6 +53,6 @@ DEPENDENCIES
   dm-sqlite-adapter
   dm-timestamps (~> 1.0.2)
   dm-validations (~> 1.0.2)
-  haml (~> 3.0.24)
+  haml (~> 3.0.25)
   rack-test
   sinatra (~> 1.1.0)
