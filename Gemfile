@@ -7,6 +7,7 @@ gem "dm-migrations", "~> 1.0.2"
 gem "dm-serializer", "~> 1.0.2"
 gem "dm-timestamps", "~> 1.0.2"
 gem "dm-validations", "~> 1.0.2" 
+gem "shotgun"
 
 gem "rack-test", :group => :test 
 

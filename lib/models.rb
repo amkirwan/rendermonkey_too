@@ -4,8 +4,11 @@ require 'dm-migrations'
 require 'dm-validations'
 require 'dm-timestamps'
 require 'dm-serializer'   
-require 'dm-postgres-adapter'
-#require 'dm-sqlite-adapter'
+if ENV['RACK_ENV'] == :production
+  require 'dm-postgres-adapter' 
+else
+  require 'dm-sqlite-adapter' 
+end
 
 DataMapper::Logger.new($stdout, :debug)  
 

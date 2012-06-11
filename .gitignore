@@ -1,2 +1,4 @@
-db/*
+db/.sqlite3
 tmp/*
+*.swp
+.DS_Store
