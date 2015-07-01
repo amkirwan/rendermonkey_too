@@ -43,7 +43,7 @@ module SecureKey
     # end setter methods
     
     def signature(hashtype, key, data)
-      digest = OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new(hashtype), key, data)
+      digest = OpenSSL::HMAC.digest(OpenSSL::Digest.new(hashtype), key, data)
       Base64.encode64(digest).chomp
     end
         
