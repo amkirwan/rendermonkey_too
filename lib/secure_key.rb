@@ -27,7 +27,7 @@ module SecureKey
       #timestamp format "2010-08-22T00:24:46Z"
       timestamp_match = timestamp.match(/^((\d{4})-(\d{2})-(\d{2}))(T(\d{2}):(\d{2}):(\d{2})(Z))$/)
       begin
-        @params_timestamp = Time.parse(timestamp_match[0], "")
+        @params_timestamp = Time.parse(timestamp_match[0])
       rescue Exception => e
         self.error_message = "Incorrect timestamp format should be iso8601"
         raise "Incorrect timestamp format should be iso8601"
