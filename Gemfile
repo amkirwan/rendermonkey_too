@@ -9,6 +9,7 @@ gem "dm-timestamps", "~> 1.2.0"
 gem "dm-validations", "~> 1.2.0" 
 gem "shotgun"
 
+gem 'test-unit', :group => :test
 gem "rack-test", :group => :test 
 gem "pry", :group => :test
 gem 'pry-byebug', :group => :test
