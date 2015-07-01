@@ -52,7 +52,7 @@ helpers do
   end
   
   def protected!         
-    unless session[options.login.admin_cookie_key] == options.login.admin_cookie_value
+    unless session[settings.login.admin_cookie_key] == settings.login.admin_cookie_value
       redirect '/api_secure_key/auth'
     end
   end   
@@ -67,8 +67,8 @@ get '/api_secure_key/auth' do
 end
 
 post '/api_secure_key/auth' do     
-  if params[:username] == options.login.admin_username && params[:password] == options.login.admin_password      
-    session[options.login.admin_cookie_key] = options.login.admin_cookie_value  
+  if params[:username] == settings.login.admin_username && params[:password] == settings.login.admin_password      
+    session[settings.login.admin_cookie_key] = settings.login.admin_cookie_value  
     redirect '/api_secure_key'
   else
     halt 401, 'Not authorized'
@@ -161,7 +161,7 @@ post '/generate' do
   if @sk.signature_match(api_secure_key, params)    
     report_type = (params["name"].nil? && 'Untitled.pdf') || params["name"] + ".pdf"
     
-    pdf = PDF::Generator.generate(options.wkhtmltopdf_cmd, params)
+    pdf = PDF::Generator.generate(settings.wkhtmltopdf_cmd, params)
     response["Content-Type"] = "application/pdf"
     response["Content-Disposition"] = "attachment; filename=#{report_type}"
     response["Content-Length"] = pdf.size.to_s
