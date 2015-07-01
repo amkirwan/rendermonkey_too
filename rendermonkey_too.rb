@@ -22,8 +22,8 @@ configure do
 
   if ENV['RACK_ENV'] == 'test'
     settings.login.admin_password = 'test_password'
-  elsif ENV['RACK_ENV'] == 'development'
-    settings.login.admin_password = 'test_password'
+  else
+    settings.login.admin_password = 'password'
   end
   
   set :session_secret, '51d3e1cf7aa1a3d3'
