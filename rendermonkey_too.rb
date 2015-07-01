@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'haml'
+require 'pry'
 
 $:.unshift File.join(File.dirname(__FILE__), "lib")
 require 'secure_key'
