@@ -4,7 +4,7 @@ require 'dm-migrations'
 require 'dm-validations'
 require 'dm-timestamps'
 require 'dm-serializer'   
-if ENV['RACK_ENV'] == :production
+if ENV['RACK_ENV'] == 'production'
   require 'dm-postgres-adapter' 
 else
   require 'dm-sqlite-adapter' 
