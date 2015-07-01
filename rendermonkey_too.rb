@@ -20,6 +20,7 @@ configure do
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
   ) 
   
+  set :session_secret, '51d3e1cf7aa1a3d3'
   set :views, File.dirname(__FILE__) + '/views'
   set :wkhtmltopdf_cmd, "i386" #"amd64"
 end 
