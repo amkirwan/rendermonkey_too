@@ -15,7 +15,6 @@ enable :sessions
 configure do 
   set :login, OpenStruct.new( 
     :admin_username => "admin", 
-    #:admin_password => "Enter Deploy Password",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
   ) 
@@ -23,7 +22,7 @@ configure do
   if ENV['RACK_ENV'] == 'test'
     settings.login.admin_password = 'test_password'
   else
-    settings.login.admin_password = 'password'
+    settings.login.admin_password = '4f114c9d30efcb1f'
   end
   
   set :session_secret, '51d3e1cf7aa1a3d3'
