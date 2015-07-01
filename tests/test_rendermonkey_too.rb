@@ -195,7 +195,7 @@ class TestRendermonkeyToo < Test::Unit::TestCase
                
     @hash_key = "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4=" 
     @sk.canonical_querystring = @params
-    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @sk.canonical_querystring)).chomp
+    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('SHA256'), @hash_key, @sk.canonical_querystring)).chomp
     @params["signature"] = signature
     
     @api = {"app_name" => "test_valid_api_secure_key", 
@@ -230,14 +230,14 @@ class TestRendermonkeyToo < Test::Unit::TestCase
   
   def xml_request(params)     
     @xml_params = "<api_secure_key><id>#{@api_secure_key.id}</id><api_key>#{@api_secure_key.api_key}</api_key></api_secure_key>"  
-    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), @hash_key, @xml_params)).chomp
+    signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('SHA256'), @hash_key, @xml_params)).chomp
     @xml_params += "<signature>#{signature}</signature>"
   end
 
   def edit_params(hash_key=nil, options={})
     @params.merge!(options)
     if !hash_key.nil?
-      signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::Digest.new('SHA256'), hash_key, @params["page"])).chomp
+      signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new('SHA256'), hash_key, @params["page"])).chomp
       @params["signature"] = signature
     end
     @params
