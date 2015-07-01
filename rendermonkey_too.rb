@@ -15,11 +15,16 @@ enable :sessions
 configure do 
   set :login, OpenStruct.new( 
     :admin_username => "admin", 
-    :admin_password => "password", 
     #:admin_password => "Enter Deploy Password",
     :admin_cookie_key => "rendermonkey_too_admin",
     :admin_cookie_value => SecureKey::Generate.random_generator({:length => 64}).to_s  #uncomment to deploy
   ) 
+
+  if ENV['RACK_ENV'] == 'test'
+    settings.login.admin_password = 'test_password'
+  elsif ENV['RACK_ENV'] == 'development'
+    settings.login.admin_password = 'test_password'
+  end
   
   set :session_secret, '51d3e1cf7aa1a3d3'
   set :views, File.dirname(__FILE__) + '/views'
