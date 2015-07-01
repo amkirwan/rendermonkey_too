@@ -10,6 +10,8 @@ gem "dm-validations", "~> 1.2.0"
 gem "shotgun"
 
 gem "rack-test", :group => :test 
+gem "pry", :group => :test
+gem 'pry-byebug', :group => :test
 
 gem "dm-sqlite-adapter", :group => :development 
 
