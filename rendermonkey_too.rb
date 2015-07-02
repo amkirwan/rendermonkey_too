@@ -180,10 +180,11 @@ post '/generate' do
   if @sk.signature_match(api_secure_key, params)    
     puts "*"*10 + " GENERATING PDF " + "*"*10
     filename = (params["name"].nil? && 'Untitled.pdf') || params["name"] + ".pdf"
+    puts "*"*10 + " #{filename} " + "*"*10
     
     pdf = PDF::Generator.generate(settings.wkhtmltopdf_cmd, params)
     File.write("#{settings.root}/output/#{filename}", pdf)
-    send_file "#{settings.root}/output/#{filename}", type: "application/pdf", disposition: "attachment; filename=#{filename}", status: 200
+    send_file "#{settings.root}/output/#{filename}", type: "application/pdf", disposition: "attachment", status: 200
   else
     status(412)
     puts "*"*10 + "#{@sk.error_message}" + "*"*10
