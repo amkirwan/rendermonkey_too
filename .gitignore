@@ -2,3 +2,4 @@ db/secure_pdf_development.sqlite3
 tmp/*
 *.swp
 .DS_Store
+output/*.pdf

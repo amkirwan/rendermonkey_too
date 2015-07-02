@@ -182,8 +182,8 @@ post '/generate' do
     filename = (params["name"].nil? && 'Untitled.pdf') || params["name"] + ".pdf"
     
     pdf = PDF::Generator.generate(settings.wkhtmltopdf_cmd, params)
-    File.write("#{settings.root}/tmp/#{filename}", pdf)
-    send_file "#{settings.root}/tmp/#{filename}", type: "application/pdf", disposition: "attachment; filename=#{filename}", status: 200
+    File.write("#{settings.root}/output/#{filename}", pdf)
+    send_file "#{settings.root}/output/#{filename}", type: "application/pdf", disposition: "attachment; filename=#{filename}", status: 200
   else
     status(412)
     puts "*"*10 + "#{@sk.error_message}" + "*"*10
