@@ -27,7 +27,8 @@ configure do
   
   set :session_secret, '51d3e1cf7aa1a3d3'
   set :views, File.dirname(__FILE__) + '/views'
-  set :wkhtmltopdf_cmd, "i386" #"amd64"
+  # set :wkhtmltopdf_cmd, "i386" #"amd64"
+  set :wkhtmltopdf_cmd, "amd64"
 end 
 
 error do
