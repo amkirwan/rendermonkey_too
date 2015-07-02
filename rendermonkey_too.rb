@@ -184,7 +184,7 @@ post '/generate' do
     
     pdf = PDF::Generator.generate(settings.wkhtmltopdf_cmd, params)
     File.write("#{settings.root}/output/#{filename}", pdf)
-    send_file "#{settings.root}/output/#{filename}", filename: filename, type: :pdf, disposition: "attachment", status: 200
+    send_file "#{settings.root}/output/#{filename}", filename: filename, type: :pdf, disposition: :attachment, status: 200
   else
     status(412)
     puts "*"*10 + "#{@sk.error_message}" + "*"*10
