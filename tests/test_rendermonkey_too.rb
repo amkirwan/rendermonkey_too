@@ -191,7 +191,8 @@ class TestRendermonkeyToo < Test::Unit::TestCase
     @sk = SecureKey::Digest.new
     @params = {"timestamp" => "#{Time.now.utc.iso8601}", 
                "page"=>"<b>Hello</b>, World!", 
-               "api_key"=>"835a3161dc4e71b"}
+               "api_key"=>"835a3161dc4e71b", 
+               "name" => "FOOBAR"}
                
     @hash_key = "sQQTe93eWcpV4Gr5HDjKUh8vu2aNDOvn3+suH1Tc4P4=" 
     @sk.canonical_querystring = @params
