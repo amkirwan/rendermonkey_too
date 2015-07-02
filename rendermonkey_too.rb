@@ -13,6 +13,8 @@ use Rack::MethodOverride
 enable :sessions
 
 configure do 
+  set :root, File.dirname(__FILE__)
+
   set :login, OpenStruct.new( 
     :admin_username => "admin", 
     :admin_cookie_key => "rendermonkey_too_admin",
@@ -180,8 +182,8 @@ post '/generate' do
     filename = (params["name"].nil? && 'Untitled.pdf') || params["name"] + ".pdf"
     
     pdf = PDF::Generator.generate(settings.wkhtmltopdf_cmd, params)
-    File.write("tmp/#{filename}", pdf)
-    send_file "tmp/#{filename}", type: "application/pdf", disposition: "attachment; filename=#{filename}", status: 200
+    File.write("#{settings.root}/tmp/#{filename}", pdf)
+    send_file "#{settings.root}/tmp/#{filename}", type: "application/pdf", disposition: "attachment; filename=#{filename}", status: 200
   else
     status(412)
     puts "*"*10 + "#{@sk.error_message}" + "*"*10
