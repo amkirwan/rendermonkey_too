@@ -164,6 +164,7 @@ post '/generate' do
   api_secure_key = ApiSecureKey.first(:api_key => params["api_key"])
 
   if @sk.signature_match(api_secure_key, params)    
+    puts "*"*10 + " GENERATING PDF " + "*"*10
     report_type = (params["name"].nil? && 'Untitled.pdf') || params["name"] + ".pdf"
     
     pdf = PDF::Generator.generate(settings.wkhtmltopdf_cmd, params)
@@ -174,7 +175,7 @@ post '/generate' do
     halt 200, pdf
   else
     status(412)
-    puts "*"*10 + @sk.error_message + "*"*10
+    puts "*"*10 + "#{@sk.error_message}" + "*"*10
     @sk.error_message
   end
 end
