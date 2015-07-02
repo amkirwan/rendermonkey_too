@@ -38,12 +38,12 @@ module PDF
       end 
       
       def cmd_path(type)
-        if type == "i386"
-          File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-i386") 
-        elsif type == "amd64"
-          File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-amd64")
-        else
-          File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-i386") 
+        if type == "darwin-x86"
+          File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-darwin-x86") 
+        elsif type == "linux-amd64"
+          File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-linux-amd64")
+        elsif type == "linux"
+          File.join(File.dirname(__FILE__), "..", "vendor", "wkhtmltopdf-linux-x86") 
         end
       end
           

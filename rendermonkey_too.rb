@@ -27,8 +27,19 @@ configure do
   
   set :session_secret, '51d3e1cf7aa1a3d3'
   set :views, File.dirname(__FILE__) + '/views'
-  # set :wkhtmltopdf_cmd, "i386" #"amd64"
-  set :wkhtmltopdf_cmd, "amd64"
+
+  arch = case RUBY_PLATFORM
+    when /64.*linux/
+      'linux-amd64'
+    when /linux/
+      'linux-x86'
+    when /darwin/
+      'darwin-x86'
+    else
+      raise 'Invalid platform'
+    end
+
+    set :wkhtmltopdf_cmd, arch
 end 
 
 error do
