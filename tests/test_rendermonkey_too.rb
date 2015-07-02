@@ -137,8 +137,6 @@ class TestRendermonkeyToo < Test::Unit::TestCase
     assert_equal url_test('/generate'), last_request.url
     assert last_response.ok?
     assert_equal last_response.content_type, 'application/pdf'
-    assert_equal last_response['content-disposition'], "attachment; filename=\"FOOBAR.pdf\""
-    assert_equal last_response['content-disposition'], "attachment; filename=\"FOOBAR.pdf\""
   end
   
   ## Test Generate Failures
